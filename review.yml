@@ -1,0 +1,80 @@
+aid: listmonk
+name: listmonk
+review:
+  question: Does listmonk expose a documented public WebSocket API?
+  answer: false
+  date: '2026-06-25'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was authored. listmonk's documented API surface is
+    HTTP REST only, served by the self-hosted instance under /api. No
+    WebSocket or Server-Sent Events (SSE) streaming transport is documented
+    in the public API reference, so there is no event-driven surface to model.
+findings:
+  summary: |
+    listmonk does not publish a documented public WebSocket API. It is a
+    self-hosted, open-source newsletter and mailing-list manager whose entire
+    documented API is HTTP REST over the operator's own instance (default
+    http://localhost:9000/api), secured with HTTP Basic auth (api_user:token)
+    or an `Authorization: token api_user:token` header. Outbound delivery
+    happens via SMTP to a downstream email provider, and inbound bounce
+    processing happens via a configured POP3 mailbox or provider webhooks -
+    none of which are WebSocket. No realtime, bidirectional, or streaming
+    WebSocket (ws:// or wss://) endpoint is documented for subscribers,
+    campaigns, transactional messages, or any other resource.
+  transports:
+    - protocol: REST
+      scheme: http
+      baseURL: http://localhost:9000/api
+      documented: true
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint is documented anywhere in the listmonk API reference.
+  endpointsConfirmedRest:
+    - GET    http://localhost:9000/api/subscribers
+    - POST   http://localhost:9000/api/subscribers
+    - GET    http://localhost:9000/api/subscribers/{subscriber_id}
+    - PUT    http://localhost:9000/api/subscribers/{subscriber_id}
+    - DELETE http://localhost:9000/api/subscribers/{subscriber_id}
+    - PUT    http://localhost:9000/api/subscribers/lists
+    - POST   http://localhost:9000/api/subscribers/query/delete
+    - GET    http://localhost:9000/api/lists
+    - POST   http://localhost:9000/api/lists
+    - PUT    http://localhost:9000/api/lists/{list_id}
+    - DELETE http://localhost:9000/api/lists/{list_id}
+    - GET    http://localhost:9000/api/campaigns
+    - POST   http://localhost:9000/api/campaigns
+    - PUT    http://localhost:9000/api/campaigns/{campaign_id}/status
+    - GET    http://localhost:9000/api/campaigns/running/stats
+    - GET    http://localhost:9000/api/campaigns/analytics/{type}
+    - GET    http://localhost:9000/api/templates
+    - POST   http://localhost:9000/api/templates
+    - GET    http://localhost:9000/api/media
+    - POST   http://localhost:9000/api/media
+    - POST   http://localhost:9000/api/tx
+    - POST   http://localhost:9000/api/import/subscribers
+    - GET    http://localhost:9000/api/import/subscribers
+    - GET    http://localhost:9000/api/bounces
+    - DELETE http://localhost:9000/api/bounces/{bounce_id}
+sources:
+  - url: https://listmonk.app/docs/apis/apis/
+    type: APIReference
+    note: API intro documents Basic auth (api_user:token) and the /api base path; all endpoints are HTTP REST.
+  - url: https://listmonk.app/docs/apis/subscribers/
+    type: Documentation
+    note: Subscriber endpoints are all HTTP REST; no streaming/WebSocket surface.
+  - url: https://listmonk.app/docs/apis/transactional/
+    type: Documentation
+    note: Transactional messages are sent via POST /api/tx; no WebSocket.
+  - url: https://listmonk.app/docs/bounces/
+    type: Documentation
+    note: Bounce processing is via POP3 mailbox polling or provider webhooks, not WebSocket.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No WebSocket or SSE protocol surface exists in listmonk's documented API,
+    so no AsyncAPI document was created. The apis.yml catalogs the REST API
+    surface with an OpenAPI 3.0.1 specification only.

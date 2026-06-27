@@ -1,0 +1,106 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: listmonk
+providerId: listmonk
+created: '2026-06-25'
+modified: '2026-06-25'
+reconciled: true
+tags:
+- Email
+- Newsletter
+- Mailing List
+- Open Source
+- Self-Hosted
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of running listmonk. The software itself is free and open-source
+  (AGPLv3) with no license or per-message fee from the project. Total cost of
+  ownership is therefore driven entirely by self-hosting infrastructure
+  (compute, the PostgreSQL database, object storage for media, bandwidth) and
+  by the third-party SMTP / email-delivery provider used for outbound sends,
+  which typically bills per-thousand or per-million emails. There is no
+  listmonk invoice to reconcile; costs appear on cloud-infrastructure and
+  email-provider bills.
+notes: >-
+  Because listmonk has no vendor billing, FinOps practice focuses on the
+  underlying hosting provider and email transport provider. Right-size the
+  server and database, watch object-storage and egress for media, and choose
+  an SMTP provider tier matched to send volume.
+sources:
+- https://listmonk.app
+- https://github.com/knadh/listmonk
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: Self-Hosted (Infrastructure + Email Provider)
+serviceCategory: Email and Messaging
+billingModel:
+  pricingCategory: Open Source / Self-Hosted
+  billingFrequency: Monthly
+  billingCurrency: USD
+  chargeCategories:
+  - Usage
+  - Purchase
+focusColumns:
+  ServiceName: listmonk
+  ServiceCategory: Email and Messaging
+  ProviderName: Self-Hosted
+  PublisherName: listmonk (knadh)
+  InvoiceIssuerName: Infrastructure / Email Provider
+  BillingCurrency: USD
+  ChargeCategory: Usage
+  PricingCategory: Open Source / Self-Hosted
+meters:
+- name: compute_hours
+  description: Server / container hours running the listmonk binary, billed by the hosting provider.
+  unit: hours
+  aggregation: sum
+  dimensions:
+  - account
+  - host
+- name: database_hours
+  description: PostgreSQL database hours / instance cost backing listmonk.
+  unit: hours
+  aggregation: sum
+  dimensions:
+  - account
+  - host
+- name: object_storage
+  description: Storage (local disk or S3-compatible) for uploaded media files.
+  unit: gigabytes
+  aggregation: sum
+  dimensions:
+  - account
+  - bucket
+- name: bandwidth
+  description: Egress bandwidth for serving media, public pages, and tracking pixels.
+  unit: gigabytes
+  aggregation: sum
+  dimensions:
+  - account
+- name: emails_sent
+  description: Outbound emails billed by the downstream SMTP / delivery provider (e.g. SES, SendGrid).
+  unit: messages
+  aggregation: sum
+  dimensions:
+  - account
+  - provider
+principles:
+- name: Visibility
+  description: Track the hosting and email-provider bills; listmonk itself emits no charges.
+- name: Allocation
+  description: Tag the server, database, storage, and SMTP account so listmonk costs map to a cost center.
+- name: Optimization
+  description: Right-size compute and Postgres, use a cost-effective SMTP tier for the send volume, and prune media/object storage.
+- name: Accountability
+  description: Assign an owner for the deployment; review infrastructure and email-send spend monthly against budget.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

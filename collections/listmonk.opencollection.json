@@ -1,0 +1,89 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "listmonk API",
+    "version": "4.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{apiUser}}",
+      "password": "{{apiToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": { "name": "Subscribers", "type": "folder" },
+      "items": [
+        { "info": { "name": "Query and retrieve subscribers.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/subscribers" }, "docs": "Query and retrieve subscribers." },
+        { "info": { "name": "Create a new subscriber.", "type": "http" }, "http": { "method": "POST", "url": "{{baseUrl}}/subscribers", "body": { "type": "json", "data": "{}" } }, "docs": "Create a new subscriber." },
+        { "info": { "name": "Retrieve a specific subscriber.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/subscribers/{{subscriber_id}}" }, "docs": "Retrieve a specific subscriber." },
+        { "info": { "name": "Update a specific subscriber.", "type": "http" }, "http": { "method": "PUT", "url": "{{baseUrl}}/subscribers/{{subscriber_id}}", "body": { "type": "json", "data": "{}" } }, "docs": "Update a specific subscriber." },
+        { "info": { "name": "Delete a specific subscriber.", "type": "http" }, "http": { "method": "DELETE", "url": "{{baseUrl}}/subscribers/{{subscriber_id}}" }, "docs": "Delete a specific subscriber." },
+        { "info": { "name": "Modify subscriber list memberships.", "type": "http" }, "http": { "method": "PUT", "url": "{{baseUrl}}/subscribers/lists", "body": { "type": "json", "data": "{}" } }, "docs": "Add, remove, or unsubscribe subscribers from lists." },
+        { "info": { "name": "Delete subscribers by SQL query.", "type": "http" }, "http": { "method": "POST", "url": "{{baseUrl}}/subscribers/query/delete", "body": { "type": "json", "data": "{}" } }, "docs": "Delete subscribers matching a SQL expression." }
+      ]
+    },
+    {
+      "info": { "name": "Lists", "type": "folder" },
+      "items": [
+        { "info": { "name": "Retrieve all lists.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/lists" }, "docs": "Retrieve all lists." },
+        { "info": { "name": "Create a new list.", "type": "http" }, "http": { "method": "POST", "url": "{{baseUrl}}/lists", "body": { "type": "json", "data": "{}" } }, "docs": "Create a new list." },
+        { "info": { "name": "Retrieve a specific list.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/lists/{{list_id}}" }, "docs": "Retrieve a specific list." },
+        { "info": { "name": "Update an existing list.", "type": "http" }, "http": { "method": "PUT", "url": "{{baseUrl}}/lists/{{list_id}}", "body": { "type": "json", "data": "{}" } }, "docs": "Update an existing list." },
+        { "info": { "name": "Delete a specific list.", "type": "http" }, "http": { "method": "DELETE", "url": "{{baseUrl}}/lists/{{list_id}}" }, "docs": "Delete a specific list." }
+      ]
+    },
+    {
+      "info": { "name": "Campaigns", "type": "folder" },
+      "items": [
+        { "info": { "name": "Retrieve all campaigns.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/campaigns" }, "docs": "Retrieve all campaigns." },
+        { "info": { "name": "Create a new campaign.", "type": "http" }, "http": { "method": "POST", "url": "{{baseUrl}}/campaigns", "body": { "type": "json", "data": "{}" } }, "docs": "Create a new campaign." },
+        { "info": { "name": "Retrieve a specific campaign.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/campaigns/{{campaign_id}}" }, "docs": "Retrieve a specific campaign." },
+        { "info": { "name": "Change status of a campaign.", "type": "http" }, "http": { "method": "PUT", "url": "{{baseUrl}}/campaigns/{{campaign_id}}/status", "body": { "type": "json", "data": "{}" } }, "docs": "Change the status of a campaign." },
+        { "info": { "name": "Test a campaign.", "type": "http" }, "http": { "method": "POST", "url": "{{baseUrl}}/campaigns/{{campaign_id}}/test", "body": { "type": "json", "data": "{}" } }, "docs": "Send a test of the campaign to arbitrary subscribers." },
+        { "info": { "name": "Retrieve campaign analytics.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/campaigns/analytics/{{type}}" }, "docs": "Retrieve view, click, link, or bounce counts for campaigns." }
+      ]
+    },
+    {
+      "info": { "name": "Templates", "type": "folder" },
+      "items": [
+        { "info": { "name": "Retrieve all templates.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/templates" }, "docs": "Retrieve all templates." },
+        { "info": { "name": "Create a template.", "type": "http" }, "http": { "method": "POST", "url": "{{baseUrl}}/templates", "body": { "type": "json", "data": "{}" } }, "docs": "Create a template." },
+        { "info": { "name": "Set default template.", "type": "http" }, "http": { "method": "PUT", "url": "{{baseUrl}}/templates/{{template_id}}/default" }, "docs": "Set a template as the default." },
+        { "info": { "name": "Delete a template.", "type": "http" }, "http": { "method": "DELETE", "url": "{{baseUrl}}/templates/{{template_id}}" }, "docs": "Delete a template." }
+      ]
+    },
+    {
+      "info": { "name": "Media", "type": "folder" },
+      "items": [
+        { "info": { "name": "Retrieve uploaded media.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/media" }, "docs": "Retrieve uploaded media files." },
+        { "info": { "name": "Upload a media file.", "type": "http" }, "http": { "method": "POST", "url": "{{baseUrl}}/media", "body": { "type": "multipart-form", "data": [] } }, "docs": "Upload a media file." },
+        { "info": { "name": "Delete a media file.", "type": "http" }, "http": { "method": "DELETE", "url": "{{baseUrl}}/media/{{media_id}}" }, "docs": "Delete an uploaded media file." }
+      ]
+    },
+    {
+      "info": { "name": "Transactional", "type": "folder" },
+      "items": [
+        { "info": { "name": "Send a transactional message.", "type": "http" }, "http": { "method": "POST", "url": "{{baseUrl}}/tx", "body": { "type": "json", "data": "{}" } }, "docs": "Send a transactional message to one or more subscribers." }
+      ]
+    },
+    {
+      "info": { "name": "Import", "type": "folder" },
+      "items": [
+        { "info": { "name": "Import subscribers from CSV.", "type": "http" }, "http": { "method": "POST", "url": "{{baseUrl}}/import/subscribers", "body": { "type": "multipart-form", "data": [] } }, "docs": "Upload a CSV (optionally ZIP-compressed) file to import subscribers." },
+        { "info": { "name": "Retrieve import status.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/import/subscribers" }, "docs": "Retrieve the status of an ongoing import." },
+        { "info": { "name": "Retrieve import logs.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/import/subscribers/logs" }, "docs": "Retrieve logs from an ongoing import." },
+        { "info": { "name": "Stop an ongoing import.", "type": "http" }, "http": { "method": "DELETE", "url": "{{baseUrl}}/import/subscribers" }, "docs": "Stop and delete an ongoing import." }
+      ]
+    },
+    {
+      "info": { "name": "Bounces", "type": "folder" },
+      "items": [
+        { "info": { "name": "Retrieve bounce records.", "type": "http" }, "http": { "method": "GET", "url": "{{baseUrl}}/bounces" }, "docs": "Retrieve bounce records." },
+        { "info": { "name": "Delete bounce records.", "type": "http" }, "http": { "method": "DELETE", "url": "{{baseUrl}}/bounces" }, "docs": "Delete bounce records by ID or all." },
+        { "info": { "name": "Delete a single bounce record.", "type": "http" }, "http": { "method": "DELETE", "url": "{{baseUrl}}/bounces/{{bounce_id}}" }, "docs": "Delete a single bounce record." }
+      ]
+    }
+  ]
+}

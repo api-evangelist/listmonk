@@ -1,0 +1,97 @@
+{
+  "info": {
+    "name": "listmonk API",
+    "description": {
+      "content": "REST API for the self-hosted, open-source listmonk newsletter and mailing-list manager. Set the baseUrl variable to your instance (e.g. http://localhost:9000/api) and authenticate with HTTP Basic auth using your API user (apiUser) and token (apiToken).",
+      "type": "text/plain"
+    },
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      { "key": "username", "value": "{{apiUser}}", "type": "string" },
+      { "key": "password", "value": "{{apiToken}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:9000/api" },
+    { "key": "apiUser", "value": "" },
+    { "key": "apiToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Subscribers",
+      "item": [
+        { "name": "Query and retrieve subscribers.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/subscribers", "host": ["{{baseUrl}}"], "path": ["subscribers"] } } },
+        { "name": "Create a new subscriber.", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"name\": \"John Doe\",\n  \"status\": \"enabled\",\n  \"lists\": [1]\n}" }, "url": { "raw": "{{baseUrl}}/subscribers", "host": ["{{baseUrl}}"], "path": ["subscribers"] } } },
+        { "name": "Retrieve a specific subscriber.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/subscribers/:subscriber_id", "host": ["{{baseUrl}}"], "path": ["subscribers", ":subscriber_id"] } } },
+        { "name": "Update a specific subscriber.", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"name\": \"John Doe\",\n  \"status\": \"enabled\"\n}" }, "url": { "raw": "{{baseUrl}}/subscribers/:subscriber_id", "host": ["{{baseUrl}}"], "path": ["subscribers", ":subscriber_id"] } } },
+        { "name": "Delete a specific subscriber.", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/subscribers/:subscriber_id", "host": ["{{baseUrl}}"], "path": ["subscribers", ":subscriber_id"] } } },
+        { "name": "Modify subscriber list memberships.", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"ids\": [1],\n  \"action\": \"add\",\n  \"target_list_ids\": [2],\n  \"status\": \"confirmed\"\n}" }, "url": { "raw": "{{baseUrl}}/subscribers/lists", "host": ["{{baseUrl}}"], "path": ["subscribers", "lists"] } } },
+        { "name": "Delete subscribers by query.", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"query\": \"subscribers.status = 'disabled'\"\n}" }, "url": { "raw": "{{baseUrl}}/subscribers/query/delete", "host": ["{{baseUrl}}"], "path": ["subscribers", "query", "delete"] } } }
+      ]
+    },
+    {
+      "name": "Lists",
+      "item": [
+        { "name": "Retrieve all lists.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/lists", "host": ["{{baseUrl}}"], "path": ["lists"] } } },
+        { "name": "Create a new list.", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Newsletter\",\n  \"type\": \"public\",\n  \"optin\": \"single\"\n}" }, "url": { "raw": "{{baseUrl}}/lists", "host": ["{{baseUrl}}"], "path": ["lists"] } } },
+        { "name": "Retrieve a specific list.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/lists/:list_id", "host": ["{{baseUrl}}"], "path": ["lists", ":list_id"] } } },
+        { "name": "Update an existing list.", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Newsletter\",\n  \"type\": \"public\",\n  \"optin\": \"double\"\n}" }, "url": { "raw": "{{baseUrl}}/lists/:list_id", "host": ["{{baseUrl}}"], "path": ["lists", ":list_id"] } } },
+        { "name": "Delete a specific list.", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/lists/:list_id", "host": ["{{baseUrl}}"], "path": ["lists", ":list_id"] } } }
+      ]
+    },
+    {
+      "name": "Campaigns",
+      "item": [
+        { "name": "Retrieve all campaigns.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/campaigns", "host": ["{{baseUrl}}"], "path": ["campaigns"] } } },
+        { "name": "Create a new campaign.", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Weekly Update\",\n  \"subject\": \"This week\",\n  \"lists\": [1],\n  \"content_type\": \"richtext\",\n  \"body\": \"<p>Hello</p>\"\n}" }, "url": { "raw": "{{baseUrl}}/campaigns", "host": ["{{baseUrl}}"], "path": ["campaigns"] } } },
+        { "name": "Retrieve a specific campaign.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/campaigns/:campaign_id", "host": ["{{baseUrl}}"], "path": ["campaigns", ":campaign_id"] } } },
+        { "name": "Change status of a campaign.", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"running\"\n}" }, "url": { "raw": "{{baseUrl}}/campaigns/:campaign_id/status", "host": ["{{baseUrl}}"], "path": ["campaigns", ":campaign_id", "status"] } } },
+        { "name": "Test a campaign.", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"subscribers\": [\"test@example.com\"]\n}" }, "url": { "raw": "{{baseUrl}}/campaigns/:campaign_id/test", "host": ["{{baseUrl}}"], "path": ["campaigns", ":campaign_id", "test"] } } },
+        { "name": "Retrieve campaign analytics.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/campaigns/analytics/:type", "host": ["{{baseUrl}}"], "path": ["campaigns", "analytics", ":type"] } } }
+      ]
+    },
+    {
+      "name": "Templates",
+      "item": [
+        { "name": "Retrieve all templates.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/templates", "host": ["{{baseUrl}}"], "path": ["templates"] } } },
+        { "name": "Create a template.", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Default\",\n  \"type\": \"campaign\",\n  \"body\": \"{{ template \\\"content\\\" . }}\"\n}" }, "url": { "raw": "{{baseUrl}}/templates", "host": ["{{baseUrl}}"], "path": ["templates"] } } },
+        { "name": "Set default template.", "request": { "method": "PUT", "header": [], "url": { "raw": "{{baseUrl}}/templates/:template_id/default", "host": ["{{baseUrl}}"], "path": ["templates", ":template_id", "default"] } } },
+        { "name": "Delete a template.", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/templates/:template_id", "host": ["{{baseUrl}}"], "path": ["templates", ":template_id"] } } }
+      ]
+    },
+    {
+      "name": "Media",
+      "item": [
+        { "name": "Retrieve uploaded media.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/media", "host": ["{{baseUrl}}"], "path": ["media"] } } },
+        { "name": "Upload a media file.", "request": { "method": "POST", "header": [], "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": [] }] }, "url": { "raw": "{{baseUrl}}/media", "host": ["{{baseUrl}}"], "path": ["media"] } } },
+        { "name": "Delete a media file.", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/media/:media_id", "host": ["{{baseUrl}}"], "path": ["media", ":media_id"] } } }
+      ]
+    },
+    {
+      "name": "Transactional",
+      "item": [
+        { "name": "Send a transactional message.", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"subscriber_email\": \"user@example.com\",\n  \"template_id\": 1,\n  \"data\": {\n    \"order_id\": \"1234\"\n  }\n}" }, "url": { "raw": "{{baseUrl}}/tx", "host": ["{{baseUrl}}"], "path": ["tx"] } } }
+      ]
+    },
+    {
+      "name": "Import",
+      "item": [
+        { "name": "Import subscribers from CSV.", "request": { "method": "POST", "header": [], "body": { "mode": "formdata", "formdata": [{ "key": "params", "value": "{\"mode\":\"subscribe\",\"lists\":[1],\"delim\":\",\"}", "type": "text" }, { "key": "file", "type": "file", "src": [] }] }, "url": { "raw": "{{baseUrl}}/import/subscribers", "host": ["{{baseUrl}}"], "path": ["import", "subscribers"] } } },
+        { "name": "Retrieve import status.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/import/subscribers", "host": ["{{baseUrl}}"], "path": ["import", "subscribers"] } } },
+        { "name": "Retrieve import logs.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/import/subscribers/logs", "host": ["{{baseUrl}}"], "path": ["import", "subscribers", "logs"] } } },
+        { "name": "Stop an ongoing import.", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/import/subscribers", "host": ["{{baseUrl}}"], "path": ["import", "subscribers"] } } }
+      ]
+    },
+    {
+      "name": "Bounces",
+      "item": [
+        { "name": "Retrieve bounce records.", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/bounces", "host": ["{{baseUrl}}"], "path": ["bounces"] } } },
+        { "name": "Delete bounce records.", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/bounces", "host": ["{{baseUrl}}"], "path": ["bounces"] } } },
+        { "name": "Delete a single bounce record.", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/bounces/:bounce_id", "host": ["{{baseUrl}}"], "path": ["bounces", ":bounce_id"] } } }
+      ]
+    }
+  ]
+}

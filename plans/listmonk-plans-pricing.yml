@@ -1,0 +1,73 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: listmonk
+providerId: listmonk
+created: '2026-06-25'
+modified: '2026-06-25'
+reconciled: true
+tags:
+- Email
+- Newsletter
+- Mailing List
+- Open Source
+- Self-Hosted
+- Plans
+description: >-
+  listmonk is free and open-source software released under the AGPLv3 license.
+  There is no hosted SaaS and no paid tiers from the project itself - users
+  self-host the single Go binary (plus a PostgreSQL database) on their own
+  infrastructure at no license cost. The only costs are the infrastructure to
+  run it (server, database, object storage) and the outbound email transport
+  (any SMTP provider such as Amazon SES, SendGrid, Postal, or a self-run MTA),
+  all of which are billed by those third parties, not by listmonk.
+notes: >-
+  listmonk does not sell licenses, subscriptions, or a managed cloud. Any
+  hosting plans (e.g. one-click marketplace images) are offered by third-party
+  platforms, not by the listmonk project.
+sources:
+- https://listmonk.app
+- https://github.com/knadh/listmonk
+- https://github.com/knadh/listmonk/blob/master/LICENSE
+plans:
+- id: listmonk-oss
+  name: Open Source (Self-Hosted)
+  type: free
+  description: >-
+    Full-featured, self-hosted newsletter and mailing-list manager under the
+    AGPLv3 license. No license fee, no usage caps imposed by the software, and
+    full access to the REST API. Operator pays only for their own
+    infrastructure and email transport.
+  entries:
+  - label: Software License
+    name: license
+    type: free
+    metric: license
+    limit: -1
+    timeFrame: perpetual
+    geo: global
+    unit: 1
+    price: $0 (AGPL-3.0)
+    userMultiplied: false
+  - label: API Access
+    name: api_access
+    type: free
+    metric: requests
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $0 (included; self-hosted)
+    userMultiplied: false
+  elements:
+  - name: Subscribers
+  - name: Lists
+  - name: Campaigns
+  - name: Templates
+  - name: Media
+  - name: Transactional
+  - name: Import
+  - name: Bounces
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

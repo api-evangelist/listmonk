@@ -1,0 +1,66 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: listmonk
+providerId: listmonk
+created: '2026-06-25'
+modified: '2026-06-25'
+reconciled: false
+tags:
+- Email
+- Newsletter
+- Mailing List
+- Open Source
+- Self-Hosted
+- Rate Limiting
+- Quotas
+- Throttling
+description: >-
+  As a self-hosted application, listmonk does not impose a vendor-side API
+  rate limit; throughput is bounded only by the operator's own server,
+  PostgreSQL database, and configuration. The relevant throttles are
+  operator-controlled message-sending concurrency and per-messenger sliding
+  windows configured in Settings (number of concurrent workers, messages per
+  second), plus any rate limits imposed by the downstream SMTP / email
+  provider used for outbound delivery. Specific numeric values depend entirely
+  on the operator's deployment and are not fixed by the project.
+notes: >-
+  Outbound email rate limiting is configured under Settings > Performance and
+  per-SMTP-server settings (max connections, idle timeout, message rate).
+  These are deployment-specific and not reconciled here. The upstream email
+  provider (e.g. Amazon SES, SendGrid) enforces its own sending quotas.
+sources:
+- https://listmonk.app/docs/apis/apis/
+- https://listmonk.app/docs/maintenance/performance/
+- https://github.com/knadh/listmonk
+responseCodes:
+  throttled: 429
+limits:
+- name: API Request Rate
+  scope: instance
+  metric: requests
+  limit: operator-controlled (no vendor limit)
+  notes: Bounded only by the self-hosted server and PostgreSQL; not capped by the software.
+- name: Message Sending Concurrency
+  scope: instance
+  metric: workers
+  limit: configured in Settings
+  notes: Number of concurrent sending workers set by the operator.
+- name: Messages Per Second
+  scope: messenger
+  metric: messages
+  limit: configured in Settings
+  notes: Per-messenger sliding-window send rate configured by the operator.
+- name: SMTP Provider Quota
+  scope: external
+  metric: messages
+  limit: provider-defined
+  notes: Enforced by the downstream SMTP / email provider (e.g. SES, SendGrid), not by listmonk.
+policies:
+- name: Operator-Controlled Throttling
+  description: Sending concurrency and per-messenger message rates are tuned by the operator under Settings.
+- name: Backoff Strategy
+  description: Clients integrating with the API should implement retries with backoff appropriate to their self-hosted instance's capacity.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
