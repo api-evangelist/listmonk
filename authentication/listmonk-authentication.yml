@@ -1,0 +1,23 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/listmonk-openapi.yml
+summary:
+  types:
+  - apiKey
+  - http
+  api_key_in:
+  - header
+schemes:
+- name: BasicAuth
+  type: http
+  scheme: basic
+  description: HTTP Basic auth using an API user name and token (api_user:token).
+  sources:
+  - openapi/listmonk-openapi.yml
+- name: TokenAuth
+  type: apiKey
+  in: header
+  parameter: Authorization
+  description: 'Authorization header in the form: token api_user:token.'
+  sources:
+  - openapi/listmonk-openapi.yml

@@ -143,6 +143,10 @@ apis:
     and monitor or stop the running import, plus retrieve and delete bounce records
     used to maintain sender reputation.
 common:
+- type: DomainSecurity
+  url: security/listmonk-domain-security.yml
+- type: Authentication
+  url: authentication/listmonk-authentication.yml
 - type: GitHubOrganization
   url: https://github.com/knadh/listmonk
 - type: LinkedIn
