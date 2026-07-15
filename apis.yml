@@ -143,6 +143,8 @@ apis:
     and monitor or stop the running import, plus retrieve and delete bounce records
     used to maintain sender reputation.
 common:
+- type: AgenticAccess
+  url: agentic-access/listmonk-agentic-access.yml
 - type: DomainSecurity
   url: security/listmonk-domain-security.yml
 - type: Authentication
