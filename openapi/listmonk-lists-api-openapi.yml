@@ -1,0 +1,215 @@
+openapi: 3.0.1
+info:
+  title: listmonk Bounces Lists API
+  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
+  termsOfService: https://listmonk.app
+  contact:
+    name: listmonk
+    url: https://listmonk.app/docs/apis/apis/
+  license:
+    name: AGPL-3.0
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+  version: '4.1'
+servers:
+- url: http://localhost:9000/api
+  description: Default local self-hosted instance
+- url: '{host}/api'
+  description: Self-hosted instance
+  variables:
+    host:
+      default: http://localhost:9000
+      description: Base URL of your listmonk instance
+security:
+- BasicAuth: []
+- TokenAuth: []
+tags:
+- name: Lists
+paths:
+  /lists:
+    get:
+      operationId: getLists
+      tags:
+      - Lists
+      summary: Retrieve all lists.
+      parameters:
+      - name: query
+        in: query
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: A paginated list of lists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListsResponse'
+    post:
+      operationId: createList
+      tags:
+      - Lists
+      summary: Create a new list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListRequest'
+      responses:
+        '200':
+          description: The created list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+    delete:
+      operationId: deleteLists
+      tags:
+      - Lists
+      summary: Delete multiple lists by ID.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: array
+          items:
+            type: integer
+      responses:
+        '200':
+          description: Deletion result.
+  /lists/{list_id}:
+    parameters:
+    - name: list_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      operationId: getList
+      tags:
+      - Lists
+      summary: Retrieve a specific list.
+      responses:
+        '200':
+          description: The list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+    put:
+      operationId: updateList
+      tags:
+      - Lists
+      summary: Update an existing list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListRequest'
+      responses:
+        '200':
+          description: The updated list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+    delete:
+      operationId: deleteList
+      tags:
+      - Lists
+      summary: Delete a specific list.
+      responses:
+        '200':
+          description: Deletion result.
+  /public/lists:
+    get:
+      operationId: getPublicLists
+      tags:
+      - Lists
+      summary: Retrieve public lists (unauthenticated, for subscription forms).
+      security: []
+      responses:
+        '200':
+          description: Public lists.
+components:
+  schemas:
+    List:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        optin:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        subscriber_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    ListRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - public
+          - private
+        optin:
+          type: string
+          enum:
+          - single
+          - double
+        tags:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+      required:
+      - name
+    ListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/List'
+    ListsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/List'
+            total:
+              type: integer
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic auth using an API user name and token (api_user:token).
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Authorization header in the form: token api_user:token.'

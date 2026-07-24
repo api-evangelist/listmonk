@@ -1,0 +1,88 @@
+openapi: 3.0.1
+info:
+  title: listmonk Bounces Import API
+  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
+  termsOfService: https://listmonk.app
+  contact:
+    name: listmonk
+    url: https://listmonk.app/docs/apis/apis/
+  license:
+    name: AGPL-3.0
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+  version: '4.1'
+servers:
+- url: http://localhost:9000/api
+  description: Default local self-hosted instance
+- url: '{host}/api'
+  description: Self-hosted instance
+  variables:
+    host:
+      default: http://localhost:9000
+      description: Base URL of your listmonk instance
+security:
+- BasicAuth: []
+- TokenAuth: []
+tags:
+- name: Import
+paths:
+  /import/subscribers:
+    get:
+      operationId: getImportStatus
+      tags:
+      - Import
+      summary: Retrieve the status of an ongoing import.
+      responses:
+        '200':
+          description: Import status.
+    post:
+      operationId: importSubscribers
+      tags:
+      - Import
+      summary: Upload a CSV (optionally ZIP-compressed) file to import subscribers.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                params:
+                  type: string
+                  description: JSON-encoded import params (mode
+                  lists: null
+                  delimiter: null
+                  overwrite).: null
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Import started.
+    delete:
+      operationId: stopImport
+      tags:
+      - Import
+      summary: Stop and delete an ongoing import.
+      responses:
+        '200':
+          description: Import stopped.
+  /import/subscribers/logs:
+    get:
+      operationId: getImportLogs
+      tags:
+      - Import
+      summary: Retrieve logs from an ongoing import.
+      responses:
+        '200':
+          description: Import logs.
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic auth using an API user name and token (api_user:token).
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Authorization header in the form: token api_user:token.'

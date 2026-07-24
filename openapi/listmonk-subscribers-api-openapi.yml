@@ -1,0 +1,361 @@
+openapi: 3.0.1
+info:
+  title: listmonk Bounces Subscribers API
+  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
+  termsOfService: https://listmonk.app
+  contact:
+    name: listmonk
+    url: https://listmonk.app/docs/apis/apis/
+  license:
+    name: AGPL-3.0
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+  version: '4.1'
+servers:
+- url: http://localhost:9000/api
+  description: Default local self-hosted instance
+- url: '{host}/api'
+  description: Self-hosted instance
+  variables:
+    host:
+      default: http://localhost:9000
+      description: Base URL of your listmonk instance
+security:
+- BasicAuth: []
+- TokenAuth: []
+tags:
+- name: Subscribers
+paths:
+  /subscribers:
+    get:
+      operationId: getSubscribers
+      tags:
+      - Subscribers
+      summary: Query and retrieve subscribers.
+      parameters:
+      - name: query
+        in: query
+        schema:
+          type: string
+        description: SQL expression to filter subscribers, e.g. subscribers.name LIKE '%john%'.
+      - name: list_id
+        in: query
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: A paginated list of subscribers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscribersResponse'
+    post:
+      operationId: createSubscriber
+      tags:
+      - Subscribers
+      summary: Create a new subscriber.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberRequest'
+      responses:
+        '200':
+          description: The created subscriber.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriberResponse'
+    delete:
+      operationId: deleteSubscribers
+      tags:
+      - Subscribers
+      summary: Delete multiple subscribers by ID.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: array
+          items:
+            type: integer
+      responses:
+        '200':
+          description: Deletion result.
+  /subscribers/{subscriber_id}:
+    parameters:
+    - name: subscriber_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      operationId: getSubscriber
+      tags:
+      - Subscribers
+      summary: Retrieve a specific subscriber.
+      responses:
+        '200':
+          description: The subscriber.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriberResponse'
+    put:
+      operationId: updateSubscriber
+      tags:
+      - Subscribers
+      summary: Update a specific subscriber.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberRequest'
+      responses:
+        '200':
+          description: The updated subscriber.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriberResponse'
+    delete:
+      operationId: deleteSubscriber
+      tags:
+      - Subscribers
+      summary: Delete a specific subscriber.
+      responses:
+        '200':
+          description: Deletion result.
+  /subscribers/{subscriber_id}/optin:
+    post:
+      operationId: sendSubscriberOptin
+      tags:
+      - Subscribers
+      summary: Send an opt-in confirmation email to a subscriber.
+      parameters:
+      - name: subscriber_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Opt-in email queued.
+  /subscribers/{subscriber_id}/export:
+    get:
+      operationId: exportSubscriber
+      tags:
+      - Subscribers
+      summary: Export a subscriber's data.
+      parameters:
+      - name: subscriber_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Exported subscriber data.
+  /subscribers/lists:
+    put:
+      operationId: manageSubscriberLists
+      tags:
+      - Subscribers
+      summary: Add, remove, or unsubscribe subscribers from lists.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberListsRequest'
+      responses:
+        '200':
+          description: List membership updated.
+  /subscribers/query/lists:
+    put:
+      operationId: manageSubscriberListsByQuery
+      tags:
+      - Subscribers
+      summary: Add, remove, or unsubscribe subscribers from lists by SQL query.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberListsRequest'
+      responses:
+        '200':
+          description: List membership updated.
+  /subscribers/{subscriber_id}/blocklist:
+    put:
+      operationId: blocklistSubscriber
+      tags:
+      - Subscribers
+      summary: Blocklist a single subscriber.
+      parameters:
+      - name: subscriber_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Subscriber blocklisted.
+  /subscribers/blocklist:
+    put:
+      operationId: blocklistSubscribers
+      tags:
+      - Subscribers
+      summary: Blocklist multiple subscribers by ID.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Subscribers blocklisted.
+  /subscribers/query/blocklist:
+    put:
+      operationId: blocklistSubscribersByQuery
+      tags:
+      - Subscribers
+      summary: Blocklist subscribers matching a SQL expression.
+      responses:
+        '200':
+          description: Subscribers blocklisted.
+  /subscribers/query/delete:
+    post:
+      operationId: deleteSubscribersByQuery
+      tags:
+      - Subscribers
+      summary: Delete subscribers matching a SQL expression.
+      responses:
+        '200':
+          description: Subscribers deleted.
+components:
+  schemas:
+    Subscriber:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        attribs:
+          type: object
+          additionalProperties: true
+        lists:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    SubscribersResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Subscriber'
+            total:
+              type: integer
+            page:
+              type: integer
+            per_page:
+              type: integer
+    SubscriberListsRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+        query:
+          type: string
+        action:
+          type: string
+          enum:
+          - add
+          - remove
+          - unsubscribe
+        target_list_ids:
+          type: array
+          items:
+            type: integer
+        status:
+          type: string
+          enum:
+          - unconfirmed
+          - confirmed
+          - unsubscribed
+    SubscriberResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Subscriber'
+    SubscriberRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+          - enabled
+          - disabled
+          - blocklisted
+        lists:
+          type: array
+          items:
+            type: integer
+          description: List IDs to subscribe to.
+        attribs:
+          type: object
+          additionalProperties: true
+          description: Arbitrary JSON attributes.
+        preconfirm_subscriptions:
+          type: boolean
+      required:
+      - email
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic auth using an API user name and token (api_user:token).
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Authorization header in the form: token api_user:token.'

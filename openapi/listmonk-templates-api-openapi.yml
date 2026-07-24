@@ -1,0 +1,208 @@
+openapi: 3.0.1
+info:
+  title: listmonk Bounces Templates API
+  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
+  termsOfService: https://listmonk.app
+  contact:
+    name: listmonk
+    url: https://listmonk.app/docs/apis/apis/
+  license:
+    name: AGPL-3.0
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+  version: '4.1'
+servers:
+- url: http://localhost:9000/api
+  description: Default local self-hosted instance
+- url: '{host}/api'
+  description: Self-hosted instance
+  variables:
+    host:
+      default: http://localhost:9000
+      description: Base URL of your listmonk instance
+security:
+- BasicAuth: []
+- TokenAuth: []
+tags:
+- name: Templates
+paths:
+  /templates:
+    get:
+      operationId: getTemplates
+      tags:
+      - Templates
+      summary: Retrieve all templates.
+      responses:
+        '200':
+          description: A list of templates.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplatesResponse'
+    post:
+      operationId: createTemplate
+      tags:
+      - Templates
+      summary: Create a template.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+      responses:
+        '200':
+          description: The created template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+  /templates/{template_id}:
+    parameters:
+    - name: template_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      operationId: getTemplate
+      tags:
+      - Templates
+      summary: Retrieve a template.
+      responses:
+        '200':
+          description: The template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+    put:
+      operationId: updateTemplate
+      tags:
+      - Templates
+      summary: Update an existing template.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+      responses:
+        '200':
+          description: The updated template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+    delete:
+      operationId: deleteTemplate
+      tags:
+      - Templates
+      summary: Delete a template.
+      responses:
+        '200':
+          description: Deletion result.
+  /templates/{template_id}/preview:
+    get:
+      operationId: previewTemplate
+      tags:
+      - Templates
+      summary: Retrieve the rendered HTML preview of a template.
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rendered template HTML.
+  /templates/{template_id}/default:
+    put:
+      operationId: setDefaultTemplate
+      tags:
+      - Templates
+      summary: Set a template as the default.
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Default template set.
+  /templates/preview:
+    post:
+      operationId: previewTemplateBody
+      tags:
+      - Templates
+      summary: Render and preview a template body without saving it.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+      responses:
+        '200':
+          description: Rendered HTML.
+components:
+  schemas:
+    TemplatesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+    TemplateResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Template'
+    TemplateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - campaign
+          - campaign_visual
+          - tx
+        subject:
+          type: string
+        body:
+          type: string
+      required:
+      - name
+      - type
+      - body
+    Template:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic auth using an API user name and token (api_user:token).
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Authorization header in the form: token api_user:token.'

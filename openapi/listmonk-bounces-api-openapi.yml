@@ -1,0 +1,133 @@
+openapi: 3.0.1
+info:
+  title: listmonk Bounces API
+  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
+  termsOfService: https://listmonk.app
+  contact:
+    name: listmonk
+    url: https://listmonk.app/docs/apis/apis/
+  license:
+    name: AGPL-3.0
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+  version: '4.1'
+servers:
+- url: http://localhost:9000/api
+  description: Default local self-hosted instance
+- url: '{host}/api'
+  description: Self-hosted instance
+  variables:
+    host:
+      default: http://localhost:9000
+      description: Base URL of your listmonk instance
+security:
+- BasicAuth: []
+- TokenAuth: []
+tags:
+- name: Bounces
+paths:
+  /bounces:
+    get:
+      operationId: getBounces
+      tags:
+      - Bounces
+      summary: Retrieve bounce records.
+      parameters:
+      - name: campaign_id
+        in: query
+        schema:
+          type: integer
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: A paginated list of bounce records.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BouncesResponse'
+    delete:
+      operationId: deleteBounces
+      tags:
+      - Bounces
+      summary: Delete bounce records by ID or all.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: all
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Deletion result.
+  /bounces/{bounce_id}:
+    delete:
+      operationId: deleteBounce
+      tags:
+      - Bounces
+      summary: Delete a single bounce record.
+      parameters:
+      - name: bounce_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Deletion result.
+components:
+  schemas:
+    BouncesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Bounce'
+            total:
+              type: integer
+    Bounce:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum:
+          - hard
+          - soft
+          - complaint
+        source:
+          type: string
+        subscriber_id:
+          type: integer
+        campaign_id:
+          type: integer
+        email:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic auth using an API user name and token (api_user:token).
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Authorization header in the form: token api_user:token.'

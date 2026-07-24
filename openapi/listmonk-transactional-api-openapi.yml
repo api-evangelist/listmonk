@@ -1,0 +1,116 @@
+openapi: 3.0.1
+info:
+  title: listmonk Bounces Transactional API
+  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
+  termsOfService: https://listmonk.app
+  contact:
+    name: listmonk
+    url: https://listmonk.app/docs/apis/apis/
+  license:
+    name: AGPL-3.0
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+  version: '4.1'
+servers:
+- url: http://localhost:9000/api
+  description: Default local self-hosted instance
+- url: '{host}/api'
+  description: Self-hosted instance
+  variables:
+    host:
+      default: http://localhost:9000
+      description: Base URL of your listmonk instance
+security:
+- BasicAuth: []
+- TokenAuth: []
+tags:
+- name: Transactional
+paths:
+  /tx:
+    post:
+      operationId: sendTransactionalMessage
+      tags:
+      - Transactional
+      summary: Send a transactional message to one or more subscribers.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionalRequest'
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: JSON-encoded transactional payload.
+                file:
+                  type: string
+                  format: binary
+                  description: Optional attachment.
+      responses:
+        '200':
+          description: Message accepted and queued.
+components:
+  schemas:
+    TransactionalRequest:
+      type: object
+      properties:
+        subscriber_email:
+          type: string
+          format: email
+        subscriber_id:
+          type: integer
+        subscriber_emails:
+          type: array
+          items:
+            type: string
+        subscriber_ids:
+          type: array
+          items:
+            type: integer
+        template_id:
+          type: integer
+        subscriber_mode:
+          type: string
+          enum:
+          - default
+          - fallback
+          - external
+        from_email:
+          type: string
+        subject:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+          description: Custom variables available in templates via {{ .Tx.Data.* }}.
+        headers:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+        messenger:
+          type: string
+          default: email
+        content_type:
+          type: string
+          enum:
+          - html
+          - markdown
+          - plain
+        altbody:
+          type: string
+      required:
+      - template_id
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic auth using an API user name and token (api_user:token).
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Authorization header in the form: token api_user:token.'

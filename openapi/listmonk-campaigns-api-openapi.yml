@@ -1,0 +1,367 @@
+openapi: 3.0.1
+info:
+  title: listmonk Bounces Campaigns API
+  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
+  termsOfService: https://listmonk.app
+  contact:
+    name: listmonk
+    url: https://listmonk.app/docs/apis/apis/
+  license:
+    name: AGPL-3.0
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+  version: '4.1'
+servers:
+- url: http://localhost:9000/api
+  description: Default local self-hosted instance
+- url: '{host}/api'
+  description: Self-hosted instance
+  variables:
+    host:
+      default: http://localhost:9000
+      description: Base URL of your listmonk instance
+security:
+- BasicAuth: []
+- TokenAuth: []
+tags:
+- name: Campaigns
+paths:
+  /campaigns:
+    get:
+      operationId: getCampaigns
+      tags:
+      - Campaigns
+      summary: Retrieve all campaigns.
+      parameters:
+      - name: query
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: A paginated list of campaigns.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignsResponse'
+    post:
+      operationId: createCampaign
+      tags:
+      - Campaigns
+      summary: Create a new campaign.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignRequest'
+      responses:
+        '200':
+          description: The created campaign.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignResponse'
+    delete:
+      operationId: deleteCampaigns
+      tags:
+      - Campaigns
+      summary: Delete multiple campaigns.
+      responses:
+        '200':
+          description: Deletion result.
+  /campaigns/{campaign_id}:
+    parameters:
+    - name: campaign_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      operationId: getCampaign
+      tags:
+      - Campaigns
+      summary: Retrieve a specific campaign.
+      responses:
+        '200':
+          description: The campaign.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignResponse'
+    put:
+      operationId: updateCampaign
+      tags:
+      - Campaigns
+      summary: Update a campaign.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignRequest'
+      responses:
+        '200':
+          description: The updated campaign.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignResponse'
+    delete:
+      operationId: deleteCampaign
+      tags:
+      - Campaigns
+      summary: Delete an individual campaign.
+      responses:
+        '200':
+          description: Deletion result.
+  /campaigns/{campaign_id}/preview:
+    get:
+      operationId: previewCampaign
+      tags:
+      - Campaigns
+      summary: Retrieve an HTML preview of a campaign.
+      parameters:
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rendered campaign HTML.
+  /campaigns/{campaign_id}/test:
+    post:
+      operationId: testCampaign
+      tags:
+      - Campaigns
+      summary: Send a test of the campaign to arbitrary subscribers.
+      parameters:
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subscribers:
+                  type: array
+                  items:
+                    type: string
+                  description: List of test recipient emails.
+      responses:
+        '200':
+          description: Test message queued.
+  /campaigns/{campaign_id}/status:
+    put:
+      operationId: updateCampaignStatus
+      tags:
+      - Campaigns
+      summary: Change the status of a campaign (running, paused, cancelled, scheduled).
+      parameters:
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - scheduled
+                  - running
+                  - paused
+                  - cancelled
+                  - finished
+      responses:
+        '200':
+          description: Status updated.
+  /campaigns/{campaign_id}/archive:
+    put:
+      operationId: archiveCampaign
+      tags:
+      - Campaigns
+      summary: Publish or update a campaign in the public archive.
+      parameters:
+      - name: campaign_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Archive settings updated.
+  /campaigns/running/stats:
+    get:
+      operationId: getRunningCampaignStats
+      tags:
+      - Campaigns
+      summary: Retrieve stats of running campaigns.
+      parameters:
+      - name: campaign_id
+        in: query
+        schema:
+          type: array
+          items:
+            type: integer
+      responses:
+        '200':
+          description: Running campaign stats.
+  /campaigns/analytics/{type}:
+    get:
+      operationId: getCampaignAnalytics
+      tags:
+      - Campaigns
+      summary: Retrieve view, click, link, or bounce counts for campaigns.
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - views
+          - clicks
+          - links
+          - bounces
+      - name: id
+        in: query
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Campaign analytics.
+components:
+  schemas:
+    CampaignResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Campaign'
+    CampaignsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Campaign'
+            total:
+              type: integer
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        content_type:
+          type: string
+        lists:
+          type: array
+          items:
+            type: object
+        sent:
+          type: integer
+        to_send:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    CampaignRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        lists:
+          type: array
+          items:
+            type: integer
+        from_email:
+          type: string
+        type:
+          type: string
+          enum:
+          - regular
+          - optin
+        content_type:
+          type: string
+          enum:
+          - richtext
+          - html
+          - markdown
+          - plain
+        body:
+          type: string
+        template_id:
+          type: integer
+        messenger:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        send_at:
+          type: string
+          format: date-time
+      required:
+      - name
+      - subject
+      - lists
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic auth using an API user name and token (api_user:token).
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Authorization header in the form: token api_user:token.'
