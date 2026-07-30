@@ -8,7 +8,20 @@ description: listmonk is a free and open-source, self-hosted newsletter and mail
   user and token) covering subscribers, lists, campaigns, templates, media, CSV
   import, transactional messages, and bounces. There is no hosted SaaS - users
   run their own instance.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/listmonk.png
 tags:
 - Email
 - Newsletter
@@ -19,129 +32,230 @@ created: '2026-06-25'
 modified: '2026-06-25'
 specificationVersion: '0.19'
 apis:
-- aid: listmonk:listmonk-subscribers-api
-  name: listmonk Subscribers API
-  tags:
-  - Subscribers
-  - Contacts
-  - Lists
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+- aid: listmonk:listmonk-bounces-api
+  name: listmonk Bounces API
+  description: The Bounces API from listmonk — 2 operation(s) for bounces.
   humanURL: https://listmonk.app/docs/apis/subscribers/
   baseURL: http://localhost:9000/api
-  properties:
-  - url: https://listmonk.app/docs/apis/subscribers/
-    type: Documentation
-  - url: https://listmonk.app/docs/apis/apis/
-    type: APIReference
-  - url: openapi/listmonk-openapi.yml
-    type: OpenAPI
-  description: Create, query, update, blocklist, and delete subscribers, manage their
-    list memberships individually or in bulk via SQL query expressions, and export
-    subscriber data. Self-hosted endpoints secured with Basic auth (api_user:token).
-- aid: listmonk:listmonk-lists-api
-  name: listmonk Lists API
   tags:
-  - Lists
-  - Mailing Lists
-  - Segmentation
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://listmonk.app/docs/apis/lists/
-  baseURL: http://localhost:9000/api
+  - Bounces
   properties:
-  - url: https://listmonk.app/docs/apis/lists/
-    type: Documentation
-  - url: openapi/listmonk-openapi.yml
-    type: OpenAPI
-  description: Create, retrieve, update, and delete mailing lists (single and double
-    opt-in, public and private), with a public unauthenticated endpoint for surfacing
-    subscribable lists on subscription forms.
+  - type: OpenAPI
+    url: openapi/listmonk-bounces-api-openapi.yml
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/subscribers/
+  - type: APIReference
+    url: https://listmonk.app/docs/apis/apis/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/lists/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/campaigns/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/templates/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/media/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/transactional/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/import/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/bounces/
 - aid: listmonk:listmonk-campaigns-api
   name: listmonk Campaigns API
+  description: The Campaigns API from listmonk — 8 operation(s) for campaigns.
+  humanURL: https://listmonk.app/docs/apis/subscribers/
+  baseURL: http://localhost:9000/api
   tags:
   - Campaigns
-  - Email
-  - Analytics
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://listmonk.app/docs/apis/campaigns/
-  baseURL: http://localhost:9000/api
   properties:
-  - url: https://listmonk.app/docs/apis/campaigns/
-    type: Documentation
-  - url: openapi/listmonk-openapi.yml
-    type: OpenAPI
-  description: Create, schedule, test, preview, and send email campaigns to one or
-    more lists, change campaign status, publish to a public archive, and pull running
-    stats and view/click/bounce analytics.
-- aid: listmonk:listmonk-templates-api
-  name: listmonk Templates API
-  tags:
-  - Templates
-  - HTML
-  - Rendering
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://listmonk.app/docs/apis/templates/
+  - type: OpenAPI
+    url: openapi/listmonk-campaigns-api-openapi.yml
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/subscribers/
+  - type: APIReference
+    url: https://listmonk.app/docs/apis/apis/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/lists/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/campaigns/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/templates/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/media/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/transactional/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/import/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/bounces/
+- aid: listmonk:listmonk-import-api
+  name: listmonk Import API
+  description: The Import API from listmonk — 2 operation(s) for import.
+  humanURL: https://listmonk.app/docs/apis/subscribers/
   baseURL: http://localhost:9000/api
-  properties:
-  - url: https://listmonk.app/docs/apis/templates/
-    type: Documentation
-  - url: openapi/listmonk-openapi.yml
-    type: OpenAPI
-  description: Manage campaign and transactional message templates - create, retrieve,
-    update, delete, set a default, and render HTML previews of Go-templated email
-    bodies.
-- aid: listmonk:listmonk-media-api
-  name: listmonk Media API
-  tags:
-  - Media
-  - Uploads
-  - Files
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://listmonk.app/docs/apis/media/
-  baseURL: http://localhost:9000/api
-  properties:
-  - url: https://listmonk.app/docs/apis/media/
-    type: Documentation
-  - url: openapi/listmonk-openapi.yml
-    type: OpenAPI
-  description: Upload, list, retrieve, and delete media files (images and attachments)
-    stored in the local filesystem or an S3-compatible backend for use in campaigns
-    and templates.
-- aid: listmonk:listmonk-transactional-api
-  name: listmonk Transactional API
-  tags:
-  - Transactional
-  - Messaging
-  - Email
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://listmonk.app/docs/apis/transactional/
-  baseURL: http://localhost:9000/api
-  properties:
-  - url: https://listmonk.app/docs/apis/transactional/
-    type: Documentation
-  - url: openapi/listmonk-openapi.yml
-    type: OpenAPI
-  description: Send arbitrary transactional messages (welcome emails, order confirmations,
-    password resets) to one or more subscribers through a preconfigured transactional
-    template, with custom data, headers, attachments, and messenger selection.
-- aid: listmonk:listmonk-import-bounces-api
-  name: listmonk Import and Bounces API
   tags:
   - Import
-  - Bounces
-  - Deliverability
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://listmonk.app/docs/apis/import/
-  baseURL: http://localhost:9000/api
   properties:
-  - url: https://listmonk.app/docs/apis/import/
-    type: Documentation
-  - url: https://listmonk.app/docs/apis/bounces/
-    type: Documentation
-  - url: openapi/listmonk-openapi.yml
-    type: OpenAPI
-  description: Bulk import subscribers from a CSV (optionally ZIP-compressed) file
-    and monitor or stop the running import, plus retrieve and delete bounce records
-    used to maintain sender reputation.
+  - type: OpenAPI
+    url: openapi/listmonk-import-api-openapi.yml
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/subscribers/
+  - type: APIReference
+    url: https://listmonk.app/docs/apis/apis/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/lists/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/campaigns/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/templates/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/media/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/transactional/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/import/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/bounces/
+- aid: listmonk:listmonk-lists-api
+  name: listmonk Lists API
+  description: The Lists API from listmonk — 3 operation(s) for lists.
+  humanURL: https://listmonk.app/docs/apis/subscribers/
+  baseURL: http://localhost:9000/api
+  tags:
+  - Lists
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-lists-api-openapi.yml
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/subscribers/
+  - type: APIReference
+    url: https://listmonk.app/docs/apis/apis/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/lists/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/campaigns/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/templates/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/media/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/transactional/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/import/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/bounces/
+- aid: listmonk:listmonk-media-api
+  name: listmonk Media API
+  description: The Media API from listmonk — 2 operation(s) for media.
+  humanURL: https://listmonk.app/docs/apis/subscribers/
+  baseURL: http://localhost:9000/api
+  tags:
+  - Media
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-media-api-openapi.yml
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/subscribers/
+  - type: APIReference
+    url: https://listmonk.app/docs/apis/apis/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/lists/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/campaigns/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/templates/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/media/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/transactional/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/import/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/bounces/
+- aid: listmonk:listmonk-subscribers-api
+  name: listmonk Subscribers API
+  description: The Subscribers API from listmonk — 10 operation(s) for subscribers.
+  humanURL: https://listmonk.app/docs/apis/subscribers/
+  baseURL: http://localhost:9000/api
+  tags:
+  - Subscribers
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-subscribers-api-openapi.yml
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/subscribers/
+  - type: APIReference
+    url: https://listmonk.app/docs/apis/apis/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/lists/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/campaigns/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/templates/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/media/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/transactional/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/import/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/bounces/
+- aid: listmonk:listmonk-templates-api
+  name: listmonk Templates API
+  description: The Templates API from listmonk — 5 operation(s) for templates.
+  humanURL: https://listmonk.app/docs/apis/subscribers/
+  baseURL: http://localhost:9000/api
+  tags:
+  - Templates
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-templates-api-openapi.yml
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/subscribers/
+  - type: APIReference
+    url: https://listmonk.app/docs/apis/apis/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/lists/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/campaigns/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/templates/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/media/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/transactional/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/import/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/bounces/
+- aid: listmonk:listmonk-transactional-api
+  name: listmonk Transactional API
+  description: The Transactional API from listmonk — 1 operation(s) for transactional.
+  humanURL: https://listmonk.app/docs/apis/subscribers/
+  baseURL: http://localhost:9000/api
+  tags:
+  - Transactional
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-transactional-api-openapi.yml
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/subscribers/
+  - type: APIReference
+    url: https://listmonk.app/docs/apis/apis/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/lists/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/campaigns/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/templates/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/media/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/transactional/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/import/
+  - type: Documentation
+    url: https://listmonk.app/docs/apis/bounces/
 common:
 - type: AgenticAccess
   url: agentic-access/listmonk-agentic-access.yml
