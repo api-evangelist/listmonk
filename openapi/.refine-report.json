@@ -1,0 +1,28 @@
+{
+  "provider": "listmonk",
+  "sources": [
+    "listmonk-bounces-api-openapi.yml",
+    "listmonk-campaigns-api-openapi.yml",
+    "listmonk-import-api-openapi.yml",
+    "listmonk-lists-api-openapi.yml",
+    "listmonk-media-api-openapi.yml",
+    "listmonk-subscribers-api-openapi.yml",
+    "listmonk-templates-api-openapi.yml",
+    "listmonk-transactional-api-openapi.yml"
+  ],
+  "outputs": [
+    "listmonk-bounces-api-openapi.yml",
+    "listmonk-campaigns-api-openapi.yml",
+    "listmonk-import-api-openapi.yml",
+    "listmonk-lists-api-openapi.yml",
+    "listmonk-media-api-openapi.yml",
+    "listmonk-subscribers-api-openapi.yml",
+    "listmonk-templates-api-openapi.yml",
+    "listmonk-transactional-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
