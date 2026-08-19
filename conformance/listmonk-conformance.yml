@@ -1,0 +1,137 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  openapi/_original/listmonk-collections-openapi.yml ,
+  https://listmonk.app/docs/apis/apis/ , https://listmonk.app/docs/oidc/ ,
+  https://listmonk.app/docs/roles-and-permissions/ , and live probes of
+  https://demo.listmonk.app/api on 2026-08-13
+description: >-
+  Which cross-cutting standards listmonk actually conforms to, asserted per
+  standard with evidence. listmonk publishes NO compliance certifications — no
+  SOC 2, ISO 27001, PCI, HIPAA or FedRAMP — and it would be odd if it did: the
+  project distributes software, it does not operate a service that could be
+  audited. Compliance for a listmonk deployment is the operator's, on the
+  operator's infrastructure. Because nothing is certified, this artifact
+  deliberately carries NO `Compliance` pointer in apis.yml.
+summary:
+  asserted: 12
+  conforms: 4
+  does_not_conform: 8
+  certifications_published: 0
+conformance:
+  - id: openapi
+    name: OpenAPI Specification
+    conforms: true
+    version: 3.0.0
+    evidence: >-
+      listmonk publishes a first-party OpenAPI 3.0.0 document at
+      https://listmonk.app/docs/swagger/collections.yaml (also in-tree at
+      docs/swagger/collections.yaml) and renders it with Swagger UI at
+      /docs/swagger/. 50 paths, 72 operations, 30 component schemas, an
+      operationId on every operation. Captured verbatim to
+      openapi/_original/listmonk-collections-openapi.yml.
+  - id: oidc
+    name: OpenID Connect
+    conforms: true
+    scope: admin-sso-only
+    evidence: >-
+      listmonk supports logging administrators in via an OIDC handshake against
+      an external provider, documented at https://listmonk.app/docs/oidc/ , with
+      auto-creation of OIDC users and default role assignment added in v5.1.0.
+      IMPORTANT SCOPE LIMIT: this is single sign-on for the admin UI. It is NOT
+      an authorization model for the REST API — API access is a separate "API
+      user" with a generated token, and no OIDC/OAuth token is accepted on
+      /api/*.
+  - id: rbac
+    name: Role-based access control
+    conforms: true
+    evidence: >-
+      33 named permissions across eight groups (lists, subscribers, campaigns,
+      bounces, media, templates, users, settings) composed into User roles, plus
+      per-list view/manage grants composed into List roles. Documented at
+      https://listmonk.app/docs/roles-and-permissions/ . Enforced on API calls,
+      not just the UI.
+  - id: pagination
+    name: Consistent pagination
+    conforms: true
+    style: page-number
+    evidence: >-
+      page / per_page / order_by / order query parameters with total, per_page
+      and page echoed in the response envelope, applied consistently across
+      collection endpoints. `per_page=all` is a documented escape hatch.
+  - id: oauth2
+    name: OAuth 2.0
+    conforms: false
+    evidence: >-
+      No oauth2 securityScheme in the published OpenAPI, no authorization or
+      token endpoint, and no /.well-known/oauth-authorization-server on any host
+      (404, probed 2026-08-13). API auth is HTTP Basic or an `Authorization:
+      token api_user:token` header.
+  - id: rfc9457
+    name: RFC 9457 Problem Details for HTTP APIs
+    conforms: false
+    evidence: >-
+      Errors return application/json with a flat {"message": "..."} body, not
+      application/problem+json. No type URI, no machine-readable code. See
+      errors/listmonk-problem-types.yml.
+  - id: idempotency
+    name: Idempotency keys for unsafe requests
+    conforms: false
+    evidence: >-
+      No Idempotency-Key header, no de-duplication window and no safe-retry
+      contract documented for POST /api/tx, POST /api/campaigns or POST
+      /api/subscribers. See conventions/listmonk-conventions.yml.
+  - id: rfc8594
+    name: RFC 8594 Sunset / Deprecation headers
+    conforms: false
+    evidence: >-
+      No Sunset or Deprecation header support; no operation in the published
+      OpenAPI is marked deprecated. See lifecycle/listmonk-lifecycle.yml.
+  - id: rfc9116
+    name: RFC 9116 security.txt
+    conforms: false
+    evidence: >-
+      /.well-known/security.txt returns 404 on listmonk.app and
+      demo.listmonk.app (probed 2026-08-13). A disclosure policy IS published,
+      just not at this path — see security/listmonk-vulnerability-disclosure.yml.
+  - id: asyncapi
+    name: AsyncAPI
+    conforms: false
+    evidence: >-
+      listmonk publishes no AsyncAPI document. It does document a webhook ingress
+      surface (POST /webhooks/bounce plus six provider-specific receivers), which
+      this pipeline has modelled at asyncapi/listmonk-bounce-webhooks-asyncapi.yml
+      as a derived artifact — that document is ours, not listmonk's.
+  - id: jsonapi
+    name: JSON:API
+    conforms: false
+    evidence: >-
+      Bespoke {"data": ...} envelope. No type/id/relationships/links structure,
+      no application/vnd.api+json media type.
+  - id: rate-limit-headers
+    name: RateLimit header fields for HTTP (draft)
+    conforms: false
+    evidence: >-
+      429 is documented in listmonk's error table, but no RateLimit-*,
+      X-RateLimit-* or Retry-After header is documented, and none was returned by
+      https://demo.listmonk.app/api/public/lists on 2026-08-13.
+certifications: []
+certifications_note: >-
+  listmonk publishes no security or compliance certifications and operates no
+  audited service. AGPL-3.0 licensed software; the operator inherits every
+  compliance obligation along with the deployment.
+regulatory_features:
+  - id: gdpr-data-export
+    name: Subscriber data export
+    evidence: GET /api/subscribers/{id}/export returns a subscriber's full profile, subscriptions, campaign views and link clicks.
+  - id: privacy-tracking-toggle
+    name: Global privacy setting to disable view and click tracking
+    evidence: Added in v6.1.0 release notes.
+  - id: optin-confirmation
+    name: Double opt-in
+    evidence: >-
+      `app.send_optin_confirmation` setting, optin list type, and POST
+      /api/subscribers/{id}/optin to resend confirmation.
+regulatory_features_note: >-
+  These are privacy-relevant FEATURES an operator can use to meet obligations.
+  They are not a compliance claim by the project, and are not recorded as one.

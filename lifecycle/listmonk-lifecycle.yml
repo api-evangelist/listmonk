@@ -1,0 +1,108 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://github.com/knadh/listmonk/releases , https://listmonk.app/docs/upgrade/ ,
+  https://listmonk.app/docs/installation/ , and
+  openapi/_original/listmonk-collections-openapi.yml
+description: >-
+  Lifecycle posture for listmonk. As self-hosted open-source software the
+  lifecycle contract is a release cadence and an upgrade path, not an SLA — there
+  is no vendor-operated service to have uptime, and therefore no status page. The
+  API is not versioned separately from the application: `/api/*` moves with the
+  binary. Breaking changes are announced in GitHub release notes, which are dated
+  and detailed, but there is no deprecation policy, no Sunset/Deprecation header
+  support (RFC 8594) and no announced support window for older majors.
+versioning:
+  scheme: semver
+  current_version: v6.2.0
+  released: '2026-06-26'
+  api_versioned_independently: false
+  version_in_path: false
+  version_in_header: false
+  prerelease_channel:
+    name: nightly
+    docker: listmonk/listmonk:nightly
+    binary: https://github.com/knadh/listmonk/releases/nightly
+    latest_build: '2026-08-07'
+    warning: >-
+      listmonk's own docs: "Nightly releases are untested and may have bugs. Use
+      at your own risk."
+  note: >-
+    The API surface is `/api/*` with no version segment. Consumers pin by pinning
+    the listmonk release. The OpenAPI listmonk publishes carries
+    `info.version: 1.0.0`, which tracks the spec document rather than the app.
+deprecation:
+  policy_published: false
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  deprecated_operations: []
+  note: >-
+    No deprecation policy, no support window for previous majors, and no
+    RFC 8594 Sunset/Deprecation headers. The published OpenAPI marks no operation
+    `deprecated: true`. Deprecations do happen and are announced in release notes
+    — v5.1.0 deprecated hCaptcha in favour of ALTCHA — but only there. Because no
+    policy is published, NO `Deprecation` pointer is wired into apis.yml.
+  downgrade: >-
+    Explicitly unsupported. listmonk's upgrade doc: "DBs that have been upgraded
+    with a particular version shouldn't be used with older versions." Restoring a
+    previous version requires restoring that version's database.
+status_page:
+  published: false
+  url: null
+  probes:
+    - url: https://listmonk.app/status
+      status: 404
+    - url: https://status.listmonk.app/
+      status: 0
+      note: DNS does not resolve.
+  note: >-
+    There is no listmonk-operated production service, so there is nothing for a
+    status page to report. No `StatusPage` pointer is wired into apis.yml. The
+    closest live surface is the public demo, https://demo.listmonk.app/, and the
+    per-instance health endpoint GET /api/health that every deployment exposes.
+sla:
+  published: false
+  note: >-
+    No SLA. Availability is entirely the operator's, as is the underlying
+    PostgreSQL and SMTP transport.
+support:
+  channels:
+    - type: issues
+      url: https://github.com/knadh/listmonk/issues
+    - type: security-advisories
+      url: https://github.com/knadh/listmonk/security/advisories
+  commercial_support: false
+upgrade:
+  docs: https://listmonk.app/docs/upgrade/
+  mechanism: >-
+    Stop the binary, replace it, run `./listmonk --upgrade` to migrate the
+    database schema, restart. Schema upgrades are idempotent and safe to re-run.
+    Docker: `docker compose down app && docker compose pull && docker compose up app -d`.
+  precondition: Take a PostgreSQL backup before every upgrade (stated as a warning on every release).
+releases:
+  cadence: irregular; roughly one minor per quarter with patch releases between
+  source: https://github.com/knadh/listmonk/releases
+  recent:
+    - version: v6.2.0
+      date: '2026-06-26'
+      security: true
+    - version: v6.1.0
+      date: '2026-03-29'
+      security: true
+    - version: v6.0.0
+      date: '2026-01-02'
+      breaking: true
+    - version: v5.1.0
+      date: '2025-09-09'
+      security: true
+    - version: v5.0.3
+      date: '2025-07-06'
+  see_also: changelog/listmonk-changelog.yml
+maturity:
+  first_release: '2019-06-26'
+  repository_created: '2019-06-26'
+  archived: false
+  license: AGPL-3.0
+  stars: 22793
+  as_of: '2026-08-13'

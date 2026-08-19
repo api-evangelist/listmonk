@@ -1,0 +1,173 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  openapi/_original/listmonk-collections-openapi.yml (components.schemas and
+  id-reference fields), enriched from https://listmonk.app/docs/concepts/ and
+  the per-resource API reference pages under https://listmonk.app/docs/apis/
+description: >-
+  Entity-relationship graph for listmonk, derived from the 30 component schemas
+  in listmonk's published OpenAPI plus the id-reference fields that link them.
+  listmonk's core is small and mail-shaped: subscribers belong to many lists
+  through a subscription that carries its own status, campaigns target lists and
+  render a template, and bounces attach to both a subscriber and the campaign
+  that produced them. Identifiers are dual — every primary entity has both a
+  serial integer `id` used on API paths and a UUID used in public-facing URLs and
+  webhook payloads.
+identifiers:
+  style: dual
+  primary: integer serial `id`, used in API paths (/api/subscribers/{id})
+  public: >-
+    UUID v4 on subscribers, lists, campaigns and media, used in public archive
+    URLs, unsubscribe links, opt-in links and bounce webhook payloads.
+  prefixes: false
+  note: >-
+    No prefixed or typed identifiers (no `sub_`, `camp_`). An integer id is
+    meaningless without knowing its resource, which matters when an agent is
+    passing ids between operations.
+entities:
+  - name: Subscriber
+    schema: Subscriber
+    path: /api/subscribers
+    fields: [id, uuid, email, name, attribs, status, lists, created_at, updated_at]
+    status_values: [enabled, disabled, blocklisted]
+    note: >-
+      `attribs` is a free-form JSONB object, queryable through the SQL `query`
+      parameter. Related schemas NewSubscriber, UpdateSubscriber,
+      SubscriberProfile, SubscriberData, SubscriberQueryRequest.
+    relationships:
+      - has_many: List
+        via: lists
+        through: Subscription
+      - has_many: Bounce
+        via: subscriber_id
+      - has_many: CampaignView
+        via: campaign_views
+      - has_many: LinkClick
+        via: link_clicks
+  - name: List
+    schema: List
+    path: /api/lists
+    fields: [id, uuid, name, type, optin, tags, description, subscriber_count, created_at, updated_at]
+    type_values: [public, private]
+    optin_values: [single, double]
+    note: Related schema NewList. Public lists are exposed unauthenticated via GET /api/public/lists.
+    relationships:
+      - has_many: Subscriber
+        via: subscriber_count
+        through: Subscription
+      - has_many: Campaign
+        via: lists
+  - name: Subscription
+    schema: Subscriptions
+    fields: [subscription_status, name, type, created_at]
+    status_values: [unconfirmed, confirmed, unsubscribed]
+    join: true
+    note: >-
+      The subscriber-list join, carrying its own status. This is the entity that
+      makes double opt-in work, and the one that PUT /api/subscribers/lists and
+      the query-based bulk operations manipulate.
+    relationships:
+      - belongs_to: Subscriber
+      - belongs_to: List
+  - name: Campaign
+    schema: Campaign
+    path: /api/campaigns
+    fields: [id, uuid, name, subject, type, content_type, from_email, messenger, tags, send_at, send_later, headers, template_id, body, altbody, status, to_send, sent, views, clicks, started_at, created_at, updated_at]
+    status_values: [draft, scheduled, running, paused, finished, cancelled]
+    type_values: [regular, optin]
+    note: Related schemas CampaignRequest, CampaignUpdate, CampaignContentRequest, CampaignStats, CampaignAnalyticsCount.
+    relationships:
+      - has_many: List
+        via: lists
+      - belongs_to: Template
+        via: template_id
+      - has_many: Bounce
+        via: campaign_id
+  - name: Template
+    schema: Template
+    path: /api/templates
+    fields: [id, name, type, subject, body, body_source, is_default, created_at, updated_at]
+    type_values: [campaign, campaign_visual, tx]
+    note: >-
+      Related schemas NewTemplate, UpdateTemplate. `body_source` holds the visual
+      builder's source when the type is campaign_visual. Exactly one template per
+      type can be default (PUT /api/templates/{id}/default).
+    relationships:
+      - has_many: Campaign
+        via: template_id
+  - name: Bounce
+    schema: Bounce
+    path: /api/bounces
+    fields: [id, type, source, meta, email, subscriber_uuid, subscriber_id, campaign, created_at]
+    type_values: [hard, soft, complaint]
+    note: >-
+      Created by POP3 mailbox scanning, by the /webhooks/bounce API, or by one of
+      six provider webhook receivers (SES, Azure ACS, Sendgrid, Postmark, Forward
+      Email, Lettermint). See asyncapi/listmonk-bounce-webhooks-asyncapi.yml.
+    relationships:
+      - belongs_to: Subscriber
+        via: subscriber_id
+      - belongs_to: Campaign
+        via: campaign.id
+  - name: MediaFile
+    schema: MediaFileObject
+    path: /api/media
+    fields: [id, uuid, filename, content_type, provider, meta, url, uri, thumb_url, thumb_uri, created_at]
+    provider_values: [filesystem, s3]
+    relationships:
+      - referenced_by: Campaign
+        via: body
+      - referenced_by: Template
+        via: body
+  - name: TransactionalMessage
+    schema: TransactionalMessage
+    path: /api/tx
+    fields: [subscriber_email, subscriber_id, template_id, from_email, data, headers, messenger, content_type]
+    ephemeral: true
+    note: >-
+      Not stored as a queryable resource — POST-only. Since v6.0.0 it may target
+      a non-subscriber e-mail address.
+    relationships:
+      - belongs_to: Template
+        via: template_id
+      - references: Subscriber
+        via: subscriber_id or subscriber_email
+  - name: Import
+    schema: ImportStatus
+    path: /api/import/subscribers
+    fields: [name, total, imported, status]
+    singleton: true
+    note: >-
+      A listmonk instance runs at most one import at a time. GET returns the
+      running import's status, DELETE stops it, and /logs tails its output.
+    relationships:
+      - creates: Subscriber
+      - targets: List
+  - name: Settings
+    schema: Settings
+    path: /api/settings
+    singleton: true
+    note: >-
+      One flat key-space using dotted keys (app.*, smtp.*, bounce.*, privacy.*,
+      upload.*). Related schemas SMTPSettings, SMTPTest, MailBoxBounces,
+      ServerConfig.
+supporting_schemas:
+  - LanguagePack
+  - ServerConfig
+  - DashboardChart
+  - DashboardCount
+  - ImportStatus
+  - CampaignStats
+  - CampaignAnalyticsCount
+  - SubscriberProfile
+  - SubscriberData
+  - SubscriberQueryRequest
+relationships_summary:
+  - Subscriber has_many List through Subscription (via lists / list_uuids)
+  - List has_many Subscriber through Subscription
+  - Campaign has_many List (via lists)
+  - Campaign belongs_to Template (via template_id)
+  - Bounce belongs_to Subscriber (via subscriber_id / subscriber_uuid)
+  - Bounce belongs_to Campaign (via campaign_id / campaign_uuid)
+  - TransactionalMessage belongs_to Template (via template_id)
+  - TransactionalMessage references Subscriber (via subscriber_id or subscriber_email)

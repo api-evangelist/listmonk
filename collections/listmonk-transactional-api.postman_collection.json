@@ -1,0 +1,154 @@
+{
+  "item": [
+    {
+      "id": "f86e8765-3ad6-4754-b7bc-df622da919be",
+      "name": "Transactional",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "99b3dd2f-5f5b-4729-a593-84dd0e72e2ea",
+          "name": "Send a transactional message to one or more subscribers.",
+          "request": {
+            "name": "Send a transactional message to one or more subscribers.",
+            "description": {},
+            "url": {
+              "path": [
+                "tx"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "JSON-encoded transactional payload."
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "Optional attachment."
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "44200102-7476-4835-b866-00f75197302e",
+              "name": "Message accepted and queued.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tx"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "JSON-encoded transactional payload.",
+                        "type": "text/plain"
+                      },
+                      "key": "data",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Optional attachment.",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "value": "<binary>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "http://localhost:9000/api",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{basicAuthUsername}}"
+      },
+      {
+        "key": "password",
+        "value": "{{basicAuthPassword}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "0cd81bc4-1f58-4ed3-87ea-d01c2625e18f",
+    "name": "listmonk Bounces Transactional API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.\n\nContact Support:\n Name: listmonk",
+      "type": "text/plain"
+    }
+  }
+}

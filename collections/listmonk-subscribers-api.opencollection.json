@@ -1,0 +1,271 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "listmonk Bounces Subscribers API",
+    "version": "4.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Subscribers",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Query and retrieve subscribers.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://localhost:9000/api/subscribers",
+            "params": [
+              {
+                "name": "query",
+                "value": "",
+                "type": "query",
+                "description": "SQL expression to filter subscribers, e.g. subscribers.name LIKE '%john%'."
+              },
+              {
+                "name": "list_id",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Query and retrieve subscribers."
+        },
+        {
+          "info": {
+            "name": "Create a new subscriber.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://localhost:9000/api/subscribers",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new subscriber."
+        },
+        {
+          "info": {
+            "name": "Delete multiple subscribers by ID.",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "http://localhost:9000/api/subscribers",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Delete multiple subscribers by ID."
+        },
+        {
+          "info": {
+            "name": "Retrieve a specific subscriber.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://localhost:9000/api/subscribers/:subscriber_id",
+            "params": [
+              {
+                "name": "subscriber_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Retrieve a specific subscriber."
+        },
+        {
+          "info": {
+            "name": "Update a specific subscriber.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "http://localhost:9000/api/subscribers/:subscriber_id",
+            "params": [
+              {
+                "name": "subscriber_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a specific subscriber."
+        },
+        {
+          "info": {
+            "name": "Delete a specific subscriber.",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "http://localhost:9000/api/subscribers/:subscriber_id",
+            "params": [
+              {
+                "name": "subscriber_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a specific subscriber."
+        },
+        {
+          "info": {
+            "name": "Send an opt-in confirmation email to a subscriber.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://localhost:9000/api/subscribers/:subscriber_id/optin",
+            "params": [
+              {
+                "name": "subscriber_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Send an opt-in confirmation email to a subscriber."
+        },
+        {
+          "info": {
+            "name": "Export a subscriber's data.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://localhost:9000/api/subscribers/:subscriber_id/export",
+            "params": [
+              {
+                "name": "subscriber_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Export a subscriber's data."
+        },
+        {
+          "info": {
+            "name": "Add, remove, or unsubscribe subscribers from lists.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "http://localhost:9000/api/subscribers/lists",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add, remove, or unsubscribe subscribers from lists."
+        },
+        {
+          "info": {
+            "name": "Add, remove, or unsubscribe subscribers from lists by SQL query.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "http://localhost:9000/api/subscribers/query/lists",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add, remove, or unsubscribe subscribers from lists by SQL query."
+        },
+        {
+          "info": {
+            "name": "Blocklist a single subscriber.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "http://localhost:9000/api/subscribers/:subscriber_id/blocklist",
+            "params": [
+              {
+                "name": "subscriber_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Blocklist a single subscriber."
+        },
+        {
+          "info": {
+            "name": "Blocklist multiple subscribers by ID.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "http://localhost:9000/api/subscribers/blocklist",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Blocklist multiple subscribers by ID."
+        },
+        {
+          "info": {
+            "name": "Blocklist subscribers matching a SQL expression.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "http://localhost:9000/api/subscribers/query/blocklist"
+          },
+          "docs": "Blocklist subscribers matching a SQL expression."
+        },
+        {
+          "info": {
+            "name": "Delete subscribers matching a SQL expression.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://localhost:9000/api/subscribers/query/delete"
+          },
+          "docs": "Delete subscribers matching a SQL expression."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

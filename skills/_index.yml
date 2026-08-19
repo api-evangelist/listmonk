@@ -1,0 +1,78 @@
+generated: '2026-08-13'
+method: generated
+source: >-
+  openapi/_original/listmonk-collections-openapi.yml (listmonk's first-party
+  OpenAPI 3.0.0, https://listmonk.app/docs/swagger/collections.yaml), plus
+  https://listmonk.app/docs/apis/ , /docs/roles-and-permissions/ and
+  /docs/bounces/
+description: >-
+  Packaged Agent Skills for the listmonk API, one per marquee flow. Every
+  operationId referenced was verified against listmonk's published OpenAPI — none
+  are invented. listmonk publishes no skills or AGENTS.md of its own; these are
+  API Evangelist's, generated from the provider's contract and documentation, and
+  they carry the cross-cutting rules an agent has to know but cannot read off the
+  spec: no idempotency anywhere, 403 rather than 401 on an auth failure, no
+  rate-limit headers, prose-only errors, and the split between the integer-id
+  admin surface and the uuid-addressed public and webhook surfaces.
+provider: listmonk
+api_base: 'https://{host}/api'
+api_base_note: >-
+  Self-hosted. There is no vendor API host; substitute the operator's own
+  hostname. Default local install is http://localhost:9000/api.
+skills:
+  - file: listmonk-subscriber-onboarding.md
+    name: listmonk-subscriber-onboarding
+    summary: >-
+      Add a subscriber to a list and drive double opt-in, covering both the
+      unauthenticated public signup path and the admin API path.
+    operations:
+      [getLists, createList, getPublicLists, handlePublicSubscription,
+       createSubscriber, getSubscriberById, subscriberSendOptinById,
+       manageSubscriberListById]
+    permissions: [lists:get_all, subscribers:manage]
+  - file: listmonk-campaign-send.md
+    name: listmonk-campaign-send
+    summary: >-
+      Create, preview, test and send a campaign, then read delivery stats and
+      analytics. Sending is a status transition, not a send endpoint.
+    operations:
+      [getTemplates, getLists, createCampaign, updateCampaignById,
+       createCampaignContentById, previewCampaignById, updatePreviewCampaignById,
+       testCampaignById, updateCampaignStatusById, getRunningCampaignStats,
+       getCampaignById, getCampaignAnalytics, updateCampaignArchiveById]
+    permissions: [campaigns:manage_all, campaigns:send, campaigns:get_analytics, templates:get]
+  - file: listmonk-transactional-send.md
+    name: listmonk-transactional-send
+    summary: >-
+      Send a one-off transactional message through a tx template, with the
+      client-side retry and deduplication discipline the API does not provide.
+    operations: [getTemplates, createTemplate, previewTemplate, transactWithSubscriber]
+    permissions: [tx:send, templates:get]
+  - file: listmonk-import-and-segment.md
+    name: listmonk-import-and-segment
+    summary: >-
+      Bulk-import subscribers from CSV as a singleton background job, then
+      segment and bulk-mutate them with raw Postgres SQL expressions.
+    operations:
+      [importSubscribers, getImportSubscribers, getImportSubscriberLogs,
+       stopImportSubscribers, getSubscribers, manageSubscriberListsByQuery,
+       blocklistSubscribersQuery, deleteSubscriberByQuery, exportSubscriberDataByID]
+    permissions: [subscribers:import, subscribers:get_all, subscribers:manage, subscribers:sql_query]
+  - file: listmonk-bounce-handling.md
+    name: listmonk-bounce-handling
+    summary: >-
+      Record bounce events from your own tooling or an SMTP provider webhook,
+      then read and act on the resulting bounce records.
+    operations:
+      [getBounces, getBounceById, deleteBounces, deleteBounceById,
+       getSubscriberBouncesById, deleteSubscriberBouncesById,
+       blocklistSubscribersQuery, manageBlocklistSubscribersById]
+    permissions: [bounces:get, bounces:manage, webhooks:post_bounce]
+cross_cutting_rules:
+  - No idempotency key on any endpoint. Retries are real repeats; deduplicate client-side.
+  - Auth failure returns HTTP 403 with {"message":"invalid session"}, not 401, and no WWW-Authenticate.
+  - Errors are prose in a `message` field; no machine-readable code, no RFC 9457.
+  - Success is {"data": ...}; preview endpoints return text/html instead.
+  - No RateLimit-*, X-RateLimit-* or Retry-After headers; 429 is documented but unsignalled.
+  - Admin API uses integer ids; the public and webhook surfaces use UUIDs.
+  - Authorization is RBAC — the right token with the wrong permission fails just like a bad token.

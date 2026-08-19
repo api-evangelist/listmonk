@@ -1,3 +1,20 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://listmonk.app/docs/apis/apis/ (the "Common HTTP error codes" table lists
+  429) and https://listmonk.app/docs/maintenance/performance/ , plus a live
+  header probe of https://demo.listmonk.app/api/public/lists on 2026-08-13.
+limit_count: 4
+response_headers: []
+response_headers_note: >-
+  PROBED, NOT ASSUMED. The live response from
+  https://demo.listmonk.app/api/public/lists on 2026-08-13 carried no
+  RateLimit-*, X-RateLimit-* or Retry-After header — only date, content-type,
+  content-length and Cloudflare edge headers. listmonk documents 429 as a
+  possible status but ships no runtime rate-limit signal, so an agent cannot
+  learn its remaining budget from a response. This is the single most
+  agent-relevant gap in the surface.
+status_on_exhaustion: 429
 specification: API Commons Rate Limits
 specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits

@@ -1,0 +1,123 @@
+generated: '2026-08-13'
+method: searched
+source: https://listmonk.app/docs/apis/sdks/
+description: >-
+  listmonk ships NO first-party MCP server. It does link one from its own
+  community SDK directory — `listmonk-mcp` by Rahul Verma (rhnvrm) — under an
+  explicit disclaimer that the listed projects "have not been verified and are
+  not officially supported". That server is a Python package run over local
+  stdio; there is no hosted endpoint an agent can POST to, and there could not
+  be, because listmonk is self-hosted software with no vendor-operated API host.
+  The tool inventory below was read from the server's source
+  (src/listmonk_mcp/server.py at rhnvrm/listmonk-mcp@master) on 2026-08-13, not
+  from a live tools/list call — a stdio server cannot be introspected over HTTP.
+official: false
+status: community
+deployment:
+  mode: local-stdio
+  endpoint: null
+  install: uvx listmonk-mcp
+  package: https://pypi.org/project/listmonk-mcp/
+  auth: api-key
+  verified: searched
+  note: >-
+    `pip install listmonk-mcp` is the documented alternative. Auth is the
+    operator's own listmonk API user + token, supplied via environment variables
+    pointing the server at their self-hosted instance. mode is local-stdio, NOT
+    remote: nothing here is reachable by an agent without a human first
+    installing the package and pointing it at a listmonk deployment.
+server:
+  name: listmonk-mcp
+  repository: https://github.com/rhnvrm/listmonk-mcp
+  docs: https://rhnvrm.github.io/listmonk-mcp/
+  language: python
+  license: see repository
+  version: 0.1.0
+  published: '2026-01-13'
+  clients_documented:
+    - Claude Desktop
+    - Cline
+    - VS Code
+    - Windsurf / Cursor
+summary:
+  tools: 29
+  resources: 13
+  source_of_truth: https://github.com/rhnvrm/listmonk-mcp/blob/master/src/listmonk_mcp/server.py
+tools:
+  - name: check_listmonk_health
+    category: system
+  - name: add_subscriber
+    category: subscribers
+  - name: update_subscriber
+    category: subscribers
+  - name: remove_subscriber
+    category: subscribers
+  - name: change_subscriber_status
+    category: subscribers
+  - name: get_mailing_lists
+    category: lists
+  - name: create_mailing_list
+    category: lists
+  - name: update_mailing_list
+    category: lists
+  - name: delete_mailing_list
+    category: lists
+  - name: get_list_subscribers_tool
+    category: lists
+  - name: get_campaigns
+    category: campaigns
+  - name: get_campaign
+    category: campaigns
+  - name: create_campaign
+    category: campaigns
+  - name: update_campaign
+    category: campaigns
+  - name: send_campaign
+    category: campaigns
+  - name: schedule_campaign
+    category: campaigns
+  - name: get_templates
+    category: templates
+  - name: get_template
+    category: templates
+  - name: create_template
+    category: templates
+  - name: update_template
+    category: templates
+  - name: delete_template
+    category: templates
+  - name: send_transactional_email
+    category: transactional
+  - name: get_media_list
+    category: media
+  - name: upload_media_file
+    category: media
+  - name: rename_media
+    category: media
+  - name: delete_media_file
+    category: media
+  - name: replace_in_campaign_body
+    category: campaigns
+  - name: regex_replace_in_campaign_body
+    category: campaigns
+  - name: batch_replace_in_campaign_body
+    category: campaigns
+resources:
+  - uri: listmonk://subscribers
+  - uri: listmonk://subscriber/{subscriber_id}
+  - uri: listmonk://subscriber/email/{email}
+  - uri: listmonk://lists
+  - uri: listmonk://list/{list_id}
+  - uri: listmonk://list/{list_id}/subscribers
+  - uri: listmonk://campaigns
+  - uri: listmonk://campaign/{campaign_id}
+  - uri: listmonk://campaign/{campaign_id}/preview
+  - uri: listmonk://templates
+  - uri: listmonk://template/{template_id}
+  - uri: listmonk://template/{template_id}/preview
+  - uri: listmonk://media
+pointer_note: >-
+  No `MCPServer` pointer is wired into apis.yml. The server is third-party;
+  emitting the canonical pointer would credit listmonk with an agent surface the
+  project neither authors nor supports. Revisit if listmonk ever ships one
+  in-tree.

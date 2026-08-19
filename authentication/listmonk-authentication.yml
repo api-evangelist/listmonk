@@ -1,23 +1,192 @@
-generated: '2026-07-11'
-method: derived
-source: openapi/listmonk-openapi.yml
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://listmonk.app/docs/apis/apis/ ,
+  https://listmonk.app/docs/roles-and-permissions/ ,
+  https://listmonk.app/docs/oidc/ , plus the securitySchemes in
+  openapi/listmonk-*-openapi.yml and a live probe of
+  https://demo.listmonk.app/api/health on 2026-08-13
+docs: https://listmonk.app/docs/apis/apis/
+description: >-
+  listmonk's API authentication is deliberately simple and entirely
+  operator-issued: there is no vendor, no key-issuing console and no token
+  service. An administrator creates an "API user" in the admin UI, listmonk
+  generates a secret token for it, and every call carries that api_user:token
+  pair either as HTTP Basic credentials or in an `Authorization: token` header.
+  What listmonk does have, and what most self-hosted tools of its size do not, is
+  a real authorization layer behind that: 33 named permissions grouped into User
+  roles, plus per-list read/write grants grouped into List roles, enforced on API
+  calls and not merely in the UI. OIDC exists but is for administrator sign-in
+  only — no OIDC or OAuth token is accepted on /api/*.
 summary:
   types:
-  - apiKey
-  - http
+    - http
+    - apiKey
   api_key_in:
-  - header
+    - header
+  oauth2: false
+  openid_connect: admin-sso-only
+  mtls: false
+  scopes: rbac-permissions
+  scope_count: 33
 schemes:
-- name: BasicAuth
-  type: http
-  scheme: basic
-  description: HTTP Basic auth using an API user name and token (api_user:token).
-  sources:
-  - openapi/listmonk-openapi.yml
-- name: TokenAuth
-  type: apiKey
-  in: header
-  parameter: Authorization
-  description: 'Authorization header in the form: token api_user:token.'
-  sources:
-  - openapi/listmonk-openapi.yml
+  - name: BasicAuth
+    type: http
+    scheme: basic
+    description: HTTP Basic auth using an API user name and token (api_user:token).
+    example: curl -u "api_user:token" http://localhost:9000/api/lists
+    sources:
+      - https://listmonk.app/docs/apis/apis/
+      - openapi/listmonk-subscribers-api-openapi.yml
+  - name: TokenAuth
+    type: apiKey
+    in: header
+    parameter: Authorization
+    description: 'Authorization header in the form: token api_user:token.'
+    example: 'curl -H "Authorization: token api_user:token" http://localhost:9000/api/lists'
+    sources:
+      - https://listmonk.app/docs/apis/apis/
+      - openapi/listmonk-subscribers-api-openapi.yml
+credentials:
+  issuance: >-
+    Created by an administrator under Admin -> Users. A user account is either a
+    regular user or an API user; API users get an automatically generated secret
+    token instead of a password and exist specifically for programmatic access.
+  rotation_policy: null
+  expiry: null
+  note: >-
+    No documented token rotation, expiry, or last-used telemetry. Rotation means
+    regenerating the API user's token in the admin UI.
+failure_behaviour:
+  unauthenticated_status: 403
+  body: '{"message":"invalid session"}'
+  evidence: >-
+    Probed https://demo.listmonk.app/api/health on 2026-08-13 with no
+    credentials — HTTP 403, not 401, and no WWW-Authenticate challenge. Clients
+    branching on 401 will miss listmonk's auth failures.
+unauthenticated_surface:
+  - operation: getPublicLists
+    path: GET /api/public/lists
+  - operation: handlePublicSubscription
+    path: POST /api/public/subscription
+unauthenticated_surface_note: >-
+  The public opt-in surface, gated by the `app.enable_public_subscription_page`
+  setting. Everything else requires credentials.
+admin_authentication:
+  password: true
+  totp_2fa: true
+  totp_since: v6.0.0
+  password_reset: e-mail based "Forgot password" flow, added in v6.0.0
+  oidc:
+    supported: true
+    docs: https://listmonk.app/docs/oidc/
+    scope: Administrator sign-in to the listmonk admin UI only.
+    auto_provisioning: >-
+      Since v5.1.0 listmonk can auto-create OIDC users and assign default user
+      and list roles.
+    note: >-
+      NOT an API authorization model. An OIDC access token cannot be presented to
+      /api/*; API callers must use an API user's token.
+  captcha:
+    current: ALTCHA (self-contained proof-of-work)
+    deprecated: hCaptcha (deprecated in v5.1.0)
+authorization:
+  model: rbac
+  docs: https://listmonk.app/docs/roles-and-permissions/
+  precedence: >-
+    `lists:get_all` and `lists:manage_all` in a User role supersede and override
+    any list-specific permission granted in a List role.
+  user_role_permissions:
+    - group: lists
+      permissions:
+        - name: lists:get_all
+          description: Get details of all lists.
+        - name: lists:manage_all
+          description: Create, update, and delete all lists.
+    - group: subscribers
+      permissions:
+        - name: subscribers:get
+          description: Get individual subscriber details.
+        - name: subscribers:get_all
+          description: Get all subscribers and their details.
+        - name: subscribers:manage
+          description: Add, update, and delete subscribers.
+        - name: subscribers:import
+          description: Import subscribers from external files.
+        - name: subscribers:sql_query
+          description: >-
+            Run raw SQL queries on subscriber data. listmonk flags this as high
+            risk: read-only on table data, but it supersedes individual list and
+            subscriber permissions and can reach Postgres system features. Grant
+            only to trusted users.
+          risk: high
+        - name: tx:send
+          description: Send transactional messages to subscribers.
+    - group: campaigns
+      permissions:
+        - name: campaigns:get
+          description: Get and view campaigns belonging to permitted lists.
+        - name: campaigns:get_all
+          description: Get and view campaigns across all lists.
+        - name: campaigns:get_analytics
+          description: Access campaign performance metrics.
+        - name: campaigns:manage
+          description: Create, update, and delete campaigns belonging to permitted lists.
+        - name: campaigns:manage_all
+          description: Create, update, and delete campaigns across all lists.
+        - name: campaigns:send
+          description: >-
+            Start, schedule, pause, resume, and cancel campaigns. Independent of
+            manage permissions — required to send even with campaigns:manage_all.
+          since: v6.1.0
+    - group: bounces
+      permissions:
+        - name: bounces:get
+          description: Get email bounce records.
+        - name: bounces:manage
+          description: Process and handle bounced emails.
+        - name: webhooks:post_bounce
+          description: Receive bounce notifications via webhook (POST /webhooks/bounce).
+    - group: media
+      permissions:
+        - name: media:get
+          description: Get uploaded media files.
+        - name: media:manage
+          description: Upload, update, and delete media.
+    - group: templates
+      permissions:
+        - name: templates:get
+          description: Get email templates.
+        - name: templates:manage
+          description: Create, update, and delete templates.
+    - group: users
+      permissions:
+        - name: users:get
+          description: Get system user accounts.
+        - name: users:manage
+          description: >-
+            Create, update, and delete user accounts. Allows creation of users
+            with any role including Super Admin — Super Admin level only.
+          risk: high
+        - name: roles:get
+          description: Get user roles and permissions.
+        - name: roles:manage
+          description: Create and modify user roles.
+    - group: settings
+      permissions:
+        - name: settings:get
+          description: Get system settings.
+        - name: settings:manage
+          description: Modify system configuration.
+        - name: settings:maintain
+          description: Perform system maintenance tasks.
+  list_roles:
+    description: >-
+      Per-list view (read) or manage (update) grants, composed into a List role
+      and attached to a user. Only the lists named in the role are accessible,
+      through the admin UI and through the API alike.
+scopes_artifact: null
+scopes_note: >-
+  No scopes/ artifact is emitted. listmonk has no OAuth surface, so there are no
+  OAuth scopes; the permission model above is listmonk RBAC and is recorded here
+  rather than dressed up as scopes it is not.

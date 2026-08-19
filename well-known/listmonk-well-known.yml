@@ -1,0 +1,124 @@
+generated: '2026-08-13'
+method: probed
+source: live HTTP probes of listmonk.app and demo.listmonk.app on 2026-08-13
+description: >-
+  Probe of the standard /.well-known/* discovery paths on every host associated
+  with listmonk. RESULT: NOTHING IS SERVED. listmonk.app is a static Hugo site
+  published from GitHub Pages (server: GitHub.com) and returns 404 for every
+  well-known path; demo.listmonk.app is a live listmonk instance behind
+  Cloudflare and likewise serves none of these documents. Because a listmonk
+  deployment is self-hosted software rather than a hosted API, there is also no
+  single canonical host that COULD serve a security.txt or api-catalog on behalf
+  of every operator.
+summary:
+  hosts_probed: 2
+  paths_probed: 22
+  hits: 0
+  pointer_emitted: false
+  pointer_note: >-
+    No WellKnown, SecurityTxt or APICatalog pointer is wired into apis.yml — a
+    recorded absence is data, not a served surface, and a pointer would assert
+    the provider publishes something it does not. Vulnerability disclosure IS
+    published, just not at /.well-known/security.txt — see
+    security/listmonk-vulnerability-disclosure.yml.
+probes:
+  - host: listmonk.app
+    path: /.well-known/security.txt
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /.well-known/agent.json
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /llms.txt
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /openapi.json
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /swagger.json
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /api-docs
+    status: 404
+    file: null
+  - host: listmonk.app
+    path: /redoc
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /.well-known/security.txt
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /.well-known/agent.json
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /llms.txt
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /openapi.json
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /swagger.json
+    status: 404
+    file: null
+  - host: demo.listmonk.app
+    path: /api-docs
+    status: 404
+    file: null

@@ -1,0 +1,144 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://listmonk.app/docs/apis/apis/ ,
+  https://listmonk.app/docs/roles-and-permissions/ ,
+  https://listmonk.app/docs/apis/subscribers/ , and
+  openapi/_original/listmonk-collections-openapi.yml
+description: >-
+  Cross-cutting runtime semantics for the listmonk REST API, read from listmonk's
+  own documentation and its published OpenAPI. listmonk is a small, consistent
+  API — one envelope, one pagination style, one auth model — but it has no
+  idempotency mechanism, no request-id tracing header, no API version in the path
+  and no rate-limit signalling. Those absences are recorded as absences.
+auth:
+  style: basic-or-token
+  schemes:
+    - name: BasicAuth
+      header: 'Authorization: Basic base64(api_user:token)'
+      example: curl -u "api_user:token" http://localhost:9000/api/lists
+    - name: TokenAuth
+      header: 'Authorization: token api_user:token'
+      example: 'curl -H "Authorization: token api_user:token" http://localhost:9000/api/lists'
+  token_issuance: >-
+    API users are created in the admin UI (Admin -> Users) and are issued an
+    automatically generated secret token rather than a password. Regular users
+    authenticate with a password or OIDC and cannot be used for API access in the
+    same way.
+  authorization: rbac
+  authorization_note: >-
+    Permissions are grouped into User roles (33 named permissions across lists,
+    subscribers, campaigns, bounces, media, templates, users, settings) and List
+    roles (per-list view/manage). `lists:get_all` and `lists:manage_all` override
+    any per-list grant. See authentication/listmonk-authentication.yml for the
+    full permission table.
+  unauthenticated_surface:
+    - GET /api/public/lists
+    - POST /api/public/subscription
+  see_also: authentication/listmonk-authentication.yml
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    listmonk publishes no idempotency key, no request de-duplication window and
+    no safe-retry contract for POST /api/tx, POST /api/campaigns or POST
+    /api/subscribers. A retried transactional send will send again. (The word
+    "idempotent" does appear in listmonk's documentation, but it refers to the
+    `--install --idempotent` CLI flag and to database schema upgrades, not to the
+    HTTP API.) No `Idempotency` pointer is wired into apis.yml, because there is
+    nothing to point at.
+pagination:
+  style: page-number
+  params:
+    - name: page
+      in: query
+      type: number
+      description: Page number, 1-based.
+    - name: per_page
+      in: query
+      type: number
+      description: >-
+        Results per page. Accepts the literal string `all` to return every
+        result in one response — a documented, deliberate escape hatch.
+    - name: order_by
+      in: query
+      type: string
+      description: Field to sort on. Allowed values differ per resource.
+    - name: order
+      in: query
+      type: string
+      enum: [asc, desc]
+  response_fields:
+    - data.results
+    - data.total
+    - data.page
+    - data.per_page
+  cursor: false
+filtering:
+  sql_query:
+    param: query
+    description: >-
+      Subscriber endpoints accept an arbitrary SQL boolean expression in a
+      `query` parameter, evaluated read-only against the subscribers table (e.g.
+      `subscribers.name LIKE 'John%' AND subscribers.attribs->>'city' = 'Bengaluru'`).
+      This is listmonk's segmentation engine and its most distinctive convention.
+    permission: subscribers:sql_query
+    risk: >-
+      listmonk documents this as high risk and states plainly that it cannot
+      prevent arbitrary Turing-complete SQL from reaching Postgres functions.
+      Grant only to trusted users; consider a NOSUPERUSER Postgres role.
+    docs: https://listmonk.app/docs/querying-and-segmentation/
+metadata:
+  field: attribs
+  type: object
+  description: >-
+    Free-form JSON attributes on subscribers (and, since v6.0.0, on campaigns).
+    Queryable from the SQL `query` parameter via Postgres JSONB operators.
+expansion:
+  supported: false
+  sparse_fields: false
+tracing:
+  request_id_header: null
+  note: No correlation or request-id header is documented or returned.
+versioning:
+  in_path: false
+  in_header: false
+  scheme: semver-on-the-application
+  note: >-
+    The API is not versioned independently of the application. There is one
+    surface, `/api/*`, and it moves with the listmonk release (currently v6.2.0).
+    Breaking API changes are announced in GitHub release notes. See
+    lifecycle/listmonk-lifecycle.yml.
+error_envelope:
+  shape: '{"message": "..."} with optional {"data": ...}'
+  rfc9457: false
+  see_also: errors/listmonk-problem-types.yml
+success_envelope:
+  shape: '{"data": {...}}'
+  note: 'Documented to also carry a `status` key with the value success on 200.'
+content_types:
+  request: [application/json, application/x-www-form-urlencoded, multipart/form-data]
+  response: [application/json, text/html]
+  note: >-
+    text/html is returned by the campaign and template preview operations
+    (previewCampaignById, updatePreviewCampaignById, previewTemplate,
+    previewTemplateById, previewCampaignTextById); everything else is JSON.
+timestamps:
+  format: '2019-01-01T09:00:00.000000+05:30'
+  description: >-
+    RFC 3339 with a six-digit fractional-second component and an explicit
+    timezone offset, documented verbatim in the API overview.
+rate_limit_signaling:
+  headers: []
+  status_on_exhaustion: 429
+  note: >-
+    429 is listed in listmonk's error table, but no RateLimit-*, X-RateLimit-* or
+    Retry-After header is documented, and none was observed on a live probe of
+    https://demo.listmonk.app/api/public/lists on 2026-08-13. See
+    rate-limits/listmonk-rate-limits.yml.
+cross_links:
+  errors: errors/listmonk-problem-types.yml
+  lifecycle: lifecycle/listmonk-lifecycle.yml
+  authentication: authentication/listmonk-authentication.yml
+  rate_limits: rate-limits/listmonk-rate-limits.yml
+  data_model: data-model/listmonk-data-model.yml

@@ -1,0 +1,93 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "listmonk Bounces Media API",
+    "version": "4.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Media",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve uploaded media files.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://localhost:9000/api/media"
+          },
+          "docs": "Retrieve uploaded media files."
+        },
+        {
+          "info": {
+            "name": "Upload a media file.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://localhost:9000/api/media",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Upload a media file."
+        },
+        {
+          "info": {
+            "name": "Retrieve a specific media file.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://localhost:9000/api/media/:media_id",
+            "params": [
+              {
+                "name": "media_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Retrieve a specific media file."
+        },
+        {
+          "info": {
+            "name": "Delete an uploaded media file.",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "http://localhost:9000/api/media/:media_id",
+            "params": [
+              {
+                "name": "media_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete an uploaded media file."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

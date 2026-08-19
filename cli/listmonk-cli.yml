@@ -1,0 +1,97 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://listmonk.app/docs/installation/ , https://listmonk.app/docs/upgrade/ ,
+  and https://github.com/knadh/listmonk/blob/master/cmd/init.go
+description: >-
+  listmonk ships as a single self-contained Go binary, and that binary is its
+  CLI. Be precise about what this CLI is: it is an OPERATOR tool for installing,
+  migrating and running a listmonk instance — it is NOT an API client. There are
+  no `listmonk subscribers list` style commands, no resource verbs, and no way to
+  drive the REST API from the command line with a first-party tool. Everything
+  below is a process flag, not a subcommand; listmonk has no subcommand surface
+  at all. Flags were read from the flag registrations in cmd/init.go on master.
+official: true
+kind: operator-cli
+api_client: false
+binary: listmonk
+install:
+  - method: binary
+    detail: >-
+      Download the release archive for the platform and extract the `listmonk`
+      binary. Prebuilt for linux, darwin, freebsd, netbsd, openbsd and windows
+      (amd64).
+    url: https://github.com/knadh/listmonk/releases
+  - method: docker
+    detail: docker compose up -d, using the project's docker-compose.yml
+    image: listmonk/listmonk:latest
+    url: https://hub.docker.com/r/listmonk/listmonk
+  - method: source
+    detail: Compile the master branch with the Go toolchain.
+    url: https://listmonk.app/docs/installation/#compiling-from-source
+subcommands: []
+flags:
+  - flag: --config
+    type: string-slice
+    default: config.toml
+    description: Path(s) to the TOML configuration file.
+  - flag: --new-config
+    type: bool
+    description: Generate a sample config file at the path given in --config.
+  - flag: --install
+    type: bool
+    description: Set up the database tables (first run). Requires PostgreSQL >= 12.
+  - flag: --idempotent
+    type: bool
+    description: Make --install run only if the database is not already set up.
+  - flag: --upgrade
+    type: bool
+    description: >-
+      Upgrade the database schema to the current version. Idempotent — running it
+      multiple times has no side effects.
+  - flag: --yes
+    type: bool
+    description: Assume "yes" to prompts during --install / --upgrade.
+  - flag: --version
+    type: bool
+    description: Print the current build version.
+  - flag: --static-dir
+    type: string
+    description: Path to a directory of static files overriding the bundled ones.
+  - flag: --i18n-dir
+    type: string
+    description: Path to a directory of i18n language files.
+  - flag: --passive
+    type: bool
+    description: Run in passive mode where campaigns are not processed.
+environment:
+  - name: LISTMONK_ADMIN_USER
+    description: Super Admin username to create during --install (first run only).
+  - name: LISTMONK_ADMIN_PASSWORD
+    description: Super Admin password to create during --install (first run only).
+  - name: LISTMONK_*
+    description: >-
+      Every config.toml key has an environment-variable equivalent; the official
+      docker-compose.yml configures the whole application this way instead of
+      mounting a config file.
+flows:
+  - name: First install (binary)
+    steps:
+      - ./listmonk --new-config
+      - edit config.toml
+      - ./listmonk --install
+      - ./listmonk
+      - visit http://localhost:9000 and create the Super Admin user
+  - name: Upgrade (binary)
+    steps:
+      - back up PostgreSQL
+      - stop the running instance
+      - replace the binary with the new release
+      - ./listmonk --upgrade
+      - ./listmonk
+  - name: Containerised install + upgrade in one command
+    steps:
+      - >-
+        ./listmonk --install --idempotent --yes --config /listmonk/config.toml &&
+        ./listmonk --upgrade --yes --config /listmonk/config.toml &&
+        ./listmonk --config /listmonk/config.toml

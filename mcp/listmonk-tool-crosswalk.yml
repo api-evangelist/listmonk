@@ -1,0 +1,241 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  mcp/listmonk-mcp.yml (tool names read from rhnvrm/listmonk-mcp
+  src/listmonk_mcp/server.py@master) bound against
+  openapi/_original/listmonk-collections-openapi.yml (listmonk's own OpenAPI
+  3.0.0, https://listmonk.app/docs/swagger/collections.yaml)
+description: >-
+  Binds every tool exposed by the community listmonk MCP server to the listmonk
+  REST operation(s) that back it. Mapping is by name and semantics: the MCP
+  server is stdio-only, so a live tools/list introspection was not possible and
+  no inputSchema could be read off the wire. Where the binding is unambiguous
+  (one tool, one operationId, matching verb and resource) confidence is high;
+  where the tool composes or fans out over several operations it is medium or
+  low and the note says why. NOTE the crosswalk is against a THIRD-PARTY server
+  — see mcp/listmonk-mcp.yml — so `mcp_only` rows describe conveniences that
+  server author added, not capabilities listmonk ships.
+surfaces:
+  openapi: openapi/_original/listmonk-collections-openapi.yml
+  openapi_source: https://listmonk.app/docs/swagger/collections.yaml
+  openapi_operations: 72
+  graphql: null
+  mcp_url: null
+  mcp_transport: stdio (local)
+  gated:
+    - >-
+      MCP: stdio only, no HTTP endpoint — tools/list could not be called; tool
+      inputSchemas were not read from the server.
+    - >-
+      REST: every operation except GET /api/public/lists and POST
+      /api/public/subscription requires an API user + token on a self-hosted
+      instance.
+coverage:
+  mcp_tools: 29
+  mapped_to_rest: 26
+  mcp_only: 3
+  rest_operations: 72
+  rest_covered_by_a_tool: 26
+  rest_only: 46
+crosswalk:
+  - tool: check_listmonk_health
+    category: system
+    rest: [getHealthCheck]
+    binding: GET /api/health
+    confidence: high
+  - tool: add_subscriber
+    category: subscribers
+    rest: [createSubscriber]
+    binding: POST /api/subscribers
+    confidence: high
+  - tool: update_subscriber
+    category: subscribers
+    rest: [updateSubscriberById]
+    binding: PUT /api/subscribers/{id}
+    confidence: high
+  - tool: remove_subscriber
+    category: subscribers
+    rest: [deleteSubscriberById]
+    binding: DELETE /api/subscribers/{id}
+    confidence: high
+  - tool: change_subscriber_status
+    category: subscribers
+    rest: [updateSubscriberById, manageBlocklistSubscribersById]
+    binding: PUT /api/subscribers/{id} or PUT /api/subscribers/{id}/blocklist
+    confidence: medium
+    note: >-
+      listmonk models status two ways — the `status` field on the subscriber
+      record, and a dedicated blocklist endpoint. Which one the tool calls for a
+      given status value could not be confirmed without introspection.
+  - tool: get_mailing_lists
+    category: lists
+    rest: [getLists]
+    binding: GET /api/lists
+    confidence: high
+  - tool: create_mailing_list
+    category: lists
+    rest: [createList]
+    binding: POST /api/lists
+    confidence: high
+  - tool: update_mailing_list
+    category: lists
+    rest: [updateListById]
+    binding: PUT /api/lists/{list_id}
+    confidence: high
+  - tool: delete_mailing_list
+    category: lists
+    rest: [deleteListById]
+    binding: DELETE /api/lists/{list_id}
+    confidence: high
+  - tool: get_list_subscribers_tool
+    category: lists
+    rest: [getSubscribers]
+    binding: GET /api/subscribers?list_id=
+    confidence: high
+    note: >-
+      listmonk has no per-list subscriber collection endpoint; list membership is
+      a query parameter on the subscribers collection.
+  - tool: get_campaigns
+    category: campaigns
+    rest: [getCampaigns]
+    binding: GET /api/campaigns
+    confidence: high
+  - tool: get_campaign
+    category: campaigns
+    rest: [getCampaignById]
+    binding: GET /api/campaigns/{id}
+    confidence: high
+  - tool: create_campaign
+    category: campaigns
+    rest: [createCampaign]
+    binding: POST /api/campaigns
+    confidence: high
+  - tool: update_campaign
+    category: campaigns
+    rest: [updateCampaignById]
+    binding: PUT /api/campaigns/{id}
+    confidence: high
+  - tool: send_campaign
+    category: campaigns
+    rest: [updateCampaignStatusById]
+    binding: PUT /api/campaigns/{id}/status
+    confidence: high
+    note: >-
+      Sending in listmonk is a status transition to `running`, not a separate
+      send endpoint. Requires the `campaigns:send` permission, which v6.1.0 split
+      out from `campaigns:manage_all`.
+  - tool: schedule_campaign
+    category: campaigns
+    rest: [updateCampaignById, updateCampaignStatusById]
+    binding: PUT /api/campaigns/{id} (send_at + send_later) then PUT /api/campaigns/{id}/status
+    confidence: medium
+    note: Scheduling is the `send_later`/`send_at` fields plus a `scheduled` status.
+  - tool: get_templates
+    category: templates
+    rest: [getTemplates]
+    binding: GET /api/templates
+    confidence: high
+  - tool: get_template
+    category: templates
+    rest: [getTemplateById]
+    binding: GET /api/templates/{id}
+    confidence: high
+  - tool: create_template
+    category: templates
+    rest: [createTemplate]
+    binding: POST /api/templates
+    confidence: high
+  - tool: update_template
+    category: templates
+    rest: [updateTemplateById]
+    binding: PUT /api/templates/{id}
+    confidence: high
+  - tool: delete_template
+    category: templates
+    rest: [deleteTemplateById]
+    binding: DELETE /api/templates/{id}
+    confidence: high
+  - tool: send_transactional_email
+    category: transactional
+    rest: [transactWithSubscriber]
+    binding: POST /api/tx
+    confidence: high
+  - tool: get_media_list
+    category: media
+    rest: [getMedia]
+    binding: GET /api/media
+    confidence: high
+  - tool: upload_media_file
+    category: media
+    rest: [uploadMedia]
+    binding: POST /api/media (multipart/form-data)
+    confidence: high
+  - tool: rename_media
+    category: media
+    rest: []
+    binding: null
+    confidence: low
+    note: >-
+      listmonk's published OpenAPI exposes no media update/PUT operation — only
+      GET, POST and DELETE on /api/media. How this tool renames a file could not
+      be confirmed from the contract. Recorded as unbound rather than guessed.
+  - tool: delete_media_file
+    category: media
+    rest: [deleteMediaById]
+    binding: DELETE /api/media/{id}
+    confidence: high
+mcp_only:
+  - tool: replace_in_campaign_body
+    reason: >-
+      Client-side convenience. Reads the campaign body, performs a literal string
+      substitution and writes it back via PUT /api/campaigns/{id}. No listmonk
+      REST operation performs substitution.
+  - tool: regex_replace_in_campaign_body
+    reason: Same as above with a regular expression. Composite, not a listmonk capability.
+  - tool: batch_replace_in_campaign_body
+    reason: >-
+      Applies a set of substitutions in one call across a campaign body. Fans out
+      over read + PUT; no backing REST operation.
+rest_only:
+  - operations: [reloadApp]
+    reason: Admin — hot reload of the running app. Not exposed as a tool.
+  - operations: [getSettings, updateSettings, testSMTPSettings]
+    reason: >-
+      Settings surface (SMTP servers, bounce mailboxes, privacy, performance).
+      Not exposed as a tool.
+  - operations: [getLogs]
+    reason: Runtime log tail. Not exposed as a tool.
+  - operations:
+      [deleteCampaignAnalyticsByType, deleteGCSubscribers, deleteUnconfirmedSubscriptions]
+    reason: Maintenance / garbage-collection surface. Not exposed as a tool.
+  - operations: [getServerConfig, getDashboardCharts, getDashboardCounts, getI18nLang]
+    reason: Miscellaneous server config, dashboard aggregates and i18n packs.
+  - operations: [getPublicLists, handlePublicSubscription]
+    reason: >-
+      The only unauthenticated surface in listmonk — the public opt-in form.
+      Not exposed as a tool.
+  - operations: [getBounces, deleteBounces, getBounceById, deleteBounceById]
+    reason: Whole Bounces resource is absent from the MCP server.
+  - operations:
+      [getImportSubscribers, importSubscribers, stopImportSubscribers, getImportSubscriberLogs]
+    reason: Whole CSV Import resource is absent from the MCP server.
+  - operations:
+      [deleteSubscriberByList, manageBlocklistBySubscriberList, manageSubscriberLists,
+       manageSubscriberListById, blocklistSubscribersQuery, deleteSubscriberByQuery,
+       manageSubscriberListsByQuery, getSubscriberById, getSubscriberBouncesById,
+       deleteSubscriberBouncesById, exportSubscriberDataByID, subscriberSendOptinById]
+    reason: >-
+      Bulk and SQL-query subscriber operations, opt-in resends and GDPR data
+      export. The query-based ones sit behind the `subscribers:sql_query`
+      permission listmonk explicitly flags as high risk.
+  - operations:
+      [getCampaignAnalytics, getRunningCampaignStats, deleteCampaignById,
+       updateCampaignArchiveById, createCampaignContentById, previewCampaignById,
+       updatePreviewCampaignById, testCampaignById, previewCampaignTextById]
+    reason: Campaign analytics, archive publishing, preview and test-send.
+  - operations: [getListById]
+    reason: Single-list read; the tool set only lists all.
+  - operations: [previewTemplate, setDefaultTemplateById, previewTemplateById]
+    reason: Template preview rendering and default-template assignment.
+  - operations: [getMediaById]
+    reason: Single media read; the tool set only lists all.

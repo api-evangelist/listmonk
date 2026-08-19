@@ -1,0 +1,114 @@
+generated: '2026-08-13'
+method: searched
+source: https://listmonk.app/docs/apis/apis/
+description: >-
+  listmonk's error contract, taken verbatim from the "Common HTTP error codes"
+  and "Failed request" sections of its own API overview page. listmonk does NOT
+  use RFC 9457 problem+json. Failures return the ordinary HTTP status with a flat
+  JSON body carrying a single human-readable `message` key, optionally
+  accompanied by a `data` key. There are no machine-readable error codes, no
+  error type URIs and no per-error documentation anchors — an agent can branch on
+  the HTTP status but must parse English prose to learn anything more specific.
+  The published OpenAPI (https://listmonk.app/docs/swagger/collections.yaml)
+  documents only 200 responses across all 72 operations, so this catalogue could
+  not be derived from the spec and was read from the docs instead.
+format: bespoke-json
+rfc9457: false
+content_type: application/json
+envelope:
+  failure:
+    shape: |
+      HTTP/1.1 500 Server error
+      Content-Type: application/json
+
+      {
+          "message": "Error message"
+      }
+    fields:
+      - name: message
+        type: string
+        required: true
+        description: Human-readable error message. The only field guaranteed on a failure.
+      - name: data
+        type: object
+        required: false
+        description: Optional additional payload accompanying the error.
+  success:
+    shape: |
+      HTTP/1.1 200 OK
+      Content-Type: application/json
+
+      {
+          "data": {}
+      }
+    note: >-
+      The docs state a successful 200 always carries a `status` key with the
+      value `success` alongside `data`; the example body shows `data` only.
+      Recorded as published, including the inconsistency.
+summary:
+  problem_types: 11
+  machine_readable_codes: 0
+  spec_documented_error_responses: 0
+problem_types:
+  - status: 400
+    title: Bad request
+    detail: Missing or bad request parameters or values.
+    retryable: false
+    remediation: Correct the request parameters. Do not retry unchanged.
+  - status: 403
+    title: Session expired or invalidated
+    detail: Session expired or invalidate. Must relogin.
+    retryable: false
+    remediation: >-
+      Re-authenticate. For API users this means checking the api_user:token pair
+      sent via BasicAuth or the `Authorization: token` header; for browser
+      sessions it means logging in again. Note listmonk answers 403 (not 401) for
+      an invalid session — GET /api/health on a live instance returns
+      `{"message":"invalid session"}` with HTTP 403 when unauthenticated.
+  - status: 404
+    title: Not found
+    detail: Request resource was not found.
+    retryable: false
+  - status: 405
+    title: Method not allowed
+    detail: Request method (GET, POST etc.) is not allowed on the requested endpoint.
+    retryable: false
+  - status: 410
+    title: Gone
+    detail: The requested resource is gone permanently.
+    retryable: false
+  - status: 422
+    title: Unprocessable entity
+    detail: Unable to process request as it contains invalid data.
+    retryable: false
+  - status: 429
+    title: Too many requests
+    detail: Too many requests to the API (rate limiting).
+    retryable: true
+    remediation: >-
+      Back off and retry. listmonk publishes no RateLimit-* or Retry-After
+      headers, so the client must choose its own backoff — see
+      rate-limits/listmonk-rate-limits.yml.
+  - status: 500
+    title: Server error
+    detail: Something unexpected went wrong.
+    retryable: true
+  - status: 502
+    title: Bad gateway
+    detail: The backend OMS is down and the API is unable to communicate with it.
+    retryable: true
+    note: >-
+      "OMS" appears verbatim in listmonk's docs table and looks like a leftover
+      from the template this error table was adapted from. Recorded as published.
+  - status: 503
+    title: Service unavailable
+    detail: Service unavailable; the API is down.
+    retryable: true
+  - status: 504
+    title: Gateway timeout
+    detail: Gateway timeout; the API is unreachable.
+    retryable: true
+gaps:
+  - The OpenAPI declares no 4xx/5xx responses on any of its 72 operations.
+  - No stable machine-readable error code or type URI accompanies the message string.
+  - No documented error taxonomy per resource (e.g. which validation failures produce 400 vs 422).

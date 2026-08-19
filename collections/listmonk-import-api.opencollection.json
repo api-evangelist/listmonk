@@ -1,0 +1,84 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "listmonk Bounces Import API",
+    "version": "4.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Import",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve the status of an ongoing import.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://localhost:9000/api/import/subscribers"
+          },
+          "docs": "Retrieve the status of an ongoing import."
+        },
+        {
+          "info": {
+            "name": "Upload a CSV (optionally ZIP-compressed) file to import subscribers.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://localhost:9000/api/import/subscribers",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "params",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Upload a CSV (optionally ZIP-compressed) file to import subscribers."
+        },
+        {
+          "info": {
+            "name": "Stop and delete an ongoing import.",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "http://localhost:9000/api/import/subscribers"
+          },
+          "docs": "Stop and delete an ongoing import."
+        },
+        {
+          "info": {
+            "name": "Retrieve logs from an ongoing import.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://localhost:9000/api/import/subscribers/logs"
+          },
+          "docs": "Retrieve logs from an ongoing import."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

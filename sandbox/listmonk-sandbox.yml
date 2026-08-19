@@ -1,0 +1,62 @@
+generated: '2026-08-13'
+method: probed
+source: https://demo.listmonk.app/ (probed 2026-08-13) and https://listmonk.app/
+description: >-
+  listmonk operates one public playground: demo.listmonk.app, a live listmonk
+  instance linked from the project homepage. It is a real deployment, not a mock
+  — its API answers on the same `/api` paths as any self-hosted instance. This is
+  the closest thing listmonk has to a sandbox, and it is a genuinely useful one
+  for reading the public surface, but be clear about its limits: there are no
+  published demo credentials, so the authenticated surface (72 of the 74
+  documented operations) cannot be exercised anonymously, and there is no
+  test-vs-live key concept because there are no vendor-issued keys at all. The
+  real "sandbox" for a developer is a local instance — `docker compose up -d`
+  against the project's own compose file, which listmonk documents as the
+  recommended install path.
+kind: public-demo-instance
+test_live_separation: false
+test_key_prefixes: []
+test_data: []
+time_simulation: false
+fixtures: false
+sandboxes:
+  - name: Public demo instance
+    url: https://demo.listmonk.app/
+    api_base: https://demo.listmonk.app/api
+    hosted_by: listmonk (linked from https://listmonk.app/)
+    credentials_published: false
+    probes:
+      - url: https://demo.listmonk.app/
+        status: 200
+        note: Serves the listmonk public subscription/archive page.
+      - url: https://demo.listmonk.app/api/public/lists
+        status: 200
+        note: >-
+          Returns real data unauthenticated —
+          [{"uuid":"e9bfe744-...","name":"Opt-in list"}]. The public list surface
+          is genuinely callable against this host today.
+      - url: https://demo.listmonk.app/api/health
+        status: 403
+        note: '{"message":"invalid session"} — the authenticated surface is closed without credentials.'
+    reachable_operations:
+      - getPublicLists
+      - handlePublicSubscription
+    note: >-
+      Demo data is reset periodically by the operator; treat any UUID or list ID
+      read from it as ephemeral.
+  - name: Local instance (documented recommended path)
+    url: https://listmonk.app/docs/installation/
+    kind: self-hosted
+    setup: >-
+      curl -LO https://github.com/knadh/listmonk/raw/master/docker-compose.yml &&
+      docker compose up -d, then visit http://localhost:9000 to create the Super
+      Admin user. Set LISTMONK_ADMIN_USER / LISTMONK_ADMIN_PASSWORD to script it.
+    credentials: Operator-created. Create an API user under Admin -> Users to get a token.
+    note: >-
+      This is where a developer gets a full, writable API surface. It costs a
+      container and a Postgres, and it is the only way to exercise campaigns,
+      transactional sends or imports.
+gaps:
+  - No published demo API credentials, so the authenticated surface cannot be tried before installing.
+  - No test mode, test tokens, or sandbox/production key separation (none is applicable — no vendor issues keys).
+  - No seeded fixture data set or reset endpoint documented for the demo.

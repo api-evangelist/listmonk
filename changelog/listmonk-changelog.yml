@@ -1,0 +1,84 @@
+generated: '2026-08-13'
+method: searched
+source: https://github.com/knadh/listmonk/releases
+description: >-
+  listmonk publishes no CHANGELOG.md and no changelog page on listmonk.app. Its
+  dated change record is the GitHub Releases feed, where every versioned release
+  carries a written "What's new" section, a security section when applicable, an
+  upgrade procedure, and a commit-level changelog. That is a real, dated,
+  human-readable changelog — it is simply hosted on GitHub rather than on the
+  project's own domain. API-affecting changes are called out inline (new
+  endpoints, new permissions, breaking template changes) but are not separated
+  from application changes.
+scheme: semver
+current_version: v6.2.0
+current_version_released: '2026-06-26'
+feed: https://github.com/knadh/listmonk/releases.atom
+api_changes_separated: false
+breaking_change_policy_published: false
+window: recent 6 releases as of 2026-08-13
+entries:
+  - version: nightly
+    date: '2026-08-07'
+    prerelease: true
+    highlights:
+      - Automated build from master; untested. Built from commit d946ce54.
+  - version: v6.2.0
+    date: '2026-06-26'
+    security: true
+    breaking: false
+    highlights:
+      - Fixes for multiple campaign/list permission validation issues in multi-user environments.
+      - Embed inline images (CID) in e-mails.
+      - Define trusted URLs and redirect to them after subscriber form submission.
+      - SMTP-server selection based on 'from e-mail' domains.
+      - Template expression support in campaign custom headers.
+      - '"Outlook compatibility mode" option in the Visual e-mail builder UI.'
+      - Support for Azure bounce webhooks.
+  - version: v6.1.0
+    date: '2026-03-29'
+    security: true
+    breaking: false
+    api_changes:
+      - Added PATCH /api/subscribers/:id for partial subscriber updates.
+      - >-
+        Added the granular `campaigns:send` permission, split out from
+        campaign manage permissions — an existing API user with
+        `campaigns:manage_all` can no longer send a campaign without it.
+    highlights:
+      - Fixes for multiple campaign/list permission validation issues in multi-user environments.
+      - New global Privacy setting to disable view and click tracking.
+      - Ability to proxy S3 media files through listmonk instead of linking to S3 directly.
+      - Lettermint bounce webhook provider.
+      - Duplicate button in the visual e-mail builder block options.
+  - version: v6.0.0
+    date: '2026-01-02'
+    breaking: true
+    api_changes:
+      - Transactional mails can now be sent to non-subscribers via POST /api/tx.
+      - Campaign-level JSON attributes, mirroring subscriber attribs.
+    highlights:
+      - TOTP two-factor authentication.
+      - E-mail-based "Forgot password" reset flow.
+      - Ability to archive lists.
+      - Subscriber activity in the subscriber profile UI.
+      - Granular override on subscriptions / subscriber profile in bulk import.
+      - In-built Postgres VACUUM cron in Maintenance settings.
+      - CORS origin configuration in Security settings.
+  - version: v5.1.0
+    date: '2025-09-09'
+    security: true
+    breaking: true
+    cve: CVE-2025-58430
+    highlights:
+      - CSRF prevention (CVE-2025-58430).
+      - ALTCHA proof-of-work CAPTCHA added; hCaptcha deprecated.
+      - Refactored media gallery.
+      - Bulk subscriber blocklisting from the bounces UI.
+      - Auto-creation of OIDC users with default user and list roles.
+      - 'Breaking: custom subscription-form.html templates must be updated for the new CAPTCHA logic.'
+  - version: v5.0.3
+    date: '2025-07-06'
+    highlights:
+      - SMTP errors now captured and displayed while sending test mails.
+      - Disallow POST /api/subscription when public subscription is disabled in settings.

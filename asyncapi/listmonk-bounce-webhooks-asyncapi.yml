@@ -1,0 +1,209 @@
+asyncapi: 3.0.0
+info:
+  title: listmonk Bounce Webhooks
+  version: '6.2.0'
+  description: >-
+    listmonk's event surface is INGRESS, not egress: a listmonk instance receives
+    bounce and complaint events, it does not emit webhooks to subscribers of its
+    own. This document models the two documented ingress channels — the generic
+    bounce webhook API (`POST /webhooks/bounce`), which any script, mailbox
+    reader or log processor can post to, and the six provider-specific receivers
+    listmonk implements for Amazon SES, Azure Communication Services, Sendgrid /
+    Twilio, Postmark, Forward Email and Lettermint.
+
+
+    PROVENANCE: listmonk publishes no AsyncAPI document. This one was DERIVED by
+    API Evangelist from listmonk's own bounce documentation
+    (https://listmonk.app/docs/bounces/) and its OpenAPI. The endpoints, the
+    payload fields, their types and their required-ness are as published; the
+    AsyncAPI framing around them is ours. The provider-specific receivers accept
+    each vendor's native bounce payload, whose schema belongs to that vendor and
+    is deliberately not restated here.
+
+
+    Bounce processing must be enabled in Settings -> Bounces before any of these
+    endpoints becomes available. The generic webhook requires an API user with
+    the `webhooks:post_bounce` permission.
+  license:
+    name: AGPL-3.0
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+  externalDocs:
+    description: listmonk bounce processing documentation
+    url: https://listmonk.app/docs/bounces/
+servers:
+  selfHosted:
+    host: '{host}'
+    protocol: https
+    description: >-
+      A self-hosted listmonk instance. listmonk operates no shared endpoint;
+      substitute the operator's own hostname (listmonk's docs use
+      `listmonk.yoursite.com`).
+    variables:
+      host:
+        default: listmonk.yoursite.com
+        description: Hostname of the listmonk deployment.
+channels:
+  bounceWebhook:
+    address: /webhooks/bounce
+    title: Generic bounce webhook
+    description: >-
+      Record a bounce event with custom scripting — from reading a mailbox, a
+      database, or mail server logs. Requires authentication with an API user
+      holding the `webhooks:post_bounce` permission.
+    messages:
+      bounceEvent:
+        $ref: '#/components/messages/BounceEvent'
+  sesWebhook:
+    address: /webhooks/service/ses
+    title: Amazon SES bounce notifications
+    description: >-
+      Receives Amazon SES / SNS bounce and complaint notifications. listmonk
+      documents SES automatic bounce processing as the recommended way to
+      maintain sender reputation.
+    messages:
+      providerEvent:
+        $ref: '#/components/messages/ProviderBounceEvent'
+  azureWebhook:
+    address: /webhooks/service/azure
+    title: Azure Communication Services e-mail events
+    description: Receives ACS e-mail delivery events via Azure Event Grid. Added in v6.2.0.
+    messages:
+      providerEvent:
+        $ref: '#/components/messages/ProviderBounceEvent'
+  sendgridWebhook:
+    address: /webhooks/service/sendgrid
+    title: Sendgrid / Twilio signed event webhook
+    messages:
+      providerEvent:
+        $ref: '#/components/messages/ProviderBounceEvent'
+  postmarkWebhook:
+    address: /webhooks/service/postmark
+    title: Postmark webhook
+    messages:
+      providerEvent:
+        $ref: '#/components/messages/ProviderBounceEvent'
+  forwardEmailWebhook:
+    address: /webhooks/service/forwardemail
+    title: Forward Email webhook
+    messages:
+      providerEvent:
+        $ref: '#/components/messages/ProviderBounceEvent'
+  lettermintWebhook:
+    address: /webhooks/service/lettermint
+    title: Lettermint webhook
+    description: Added in v6.1.0.
+    messages:
+      providerEvent:
+        $ref: '#/components/messages/ProviderBounceEvent'
+operations:
+  receiveBounceEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/bounceWebhook'
+    title: Record a bounce event
+    summary: listmonk receives a bounce event posted by an external script or system.
+    messages:
+      - $ref: '#/channels/bounceWebhook/messages/bounceEvent'
+  receiveSesEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/sesWebhook'
+    title: Receive an Amazon SES bounce notification
+  receiveAzureEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/azureWebhook'
+    title: Receive an Azure Communication Services e-mail event
+  receiveSendgridEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/sendgridWebhook'
+    title: Receive a Sendgrid signed event
+  receivePostmarkEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/postmarkWebhook'
+    title: Receive a Postmark webhook
+  receiveForwardEmailEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/forwardEmailWebhook'
+    title: Receive a Forward Email webhook
+  receiveLettermintEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/lettermintWebhook'
+    title: Receive a Lettermint webhook
+components:
+  messages:
+    BounceEvent:
+      name: BounceEvent
+      title: Bounce event
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/BounceEvent'
+    ProviderBounceEvent:
+      name: ProviderBounceEvent
+      title: Provider-native bounce notification
+      contentType: application/json
+      summary: >-
+        The upstream provider's own bounce/complaint payload, forwarded verbatim.
+        listmonk parses each provider's native format. The schema belongs to the
+        provider and is not restated here — see the provider's documentation
+        linked from https://listmonk.app/docs/bounces/.
+  schemas:
+    BounceEvent:
+      type: object
+      required:
+        - source
+        - type
+      properties:
+        subscriber_uuid:
+          type: string
+          format: uuid
+          description: >-
+            The UUID of the subscriber. Either this or `email` is required.
+        email:
+          type: string
+          format: email
+          description: >-
+            The e-mail of the subscriber. Either this or `subscriber_uuid` is
+            required.
+        campaign_uuid:
+          type: string
+          format: uuid
+          description: UUID of the campaign for which the bounce happened.
+        source:
+          type: string
+          description: 'A string indicating the source, eg: `api`, `my_script`.'
+          examples:
+            - api
+            - my_script
+        type:
+          type: string
+          enum:
+            - hard
+            - soft
+          description: >-
+            Bounce type. listmonk's docs note this currently has no effect on how
+            the bounce is treated.
+        meta:
+          type: string
+          description: >-
+            An optional escaped JSON string with arbitrary metadata about the
+            bounce event.
+      examples:
+        - email: user1@mail.com
+          campaign_uuid: 9f86b50d-5711-41c8-ab03-bc91c43d711b
+          source: api
+          type: hard
+          meta: '{"additional": "info"}'
+  securitySchemes:
+    basicAuth:
+      type: userPassword
+      description: >-
+        HTTP Basic auth with an API user and token
+        (`curl -u 'api_username:access_token'`). The API user must hold the
+        `webhooks:post_bounce` permission. Provider-specific receivers instead
+        validate the upstream provider's own signature or shared secret,
+        configured in Settings -> Bounces.
