@@ -36,7 +36,7 @@ tags:
 - PostgreSQL
 created: '2026-06-25'
 modified: '2026-08-13'
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: listmonk:listmonk-bounces-api
   name: listmonk Bounces API
