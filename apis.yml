@@ -30,6 +30,19 @@ tags:
 - Campaigns
 - Subscribers
 - Bounce Handling
+- Open-Source
+- Self-Hosted
+- Go
+- PostgreSQL
+tags_raw:
+- Email
+- Newsletter
+- Mailing List
+- Marketing
+- Transactional Email
+- Campaigns
+- Subscribers
+- Bounce Handling
 - Open Source
 - Self-Hosted
 - Go
@@ -86,6 +99,8 @@ apis:
   humanURL: https://listmonk.app/docs/apis/lists/
   baseURL: https://{listmonk_host}/api
   tags:
+  - List
+  tags_raw:
   - Lists
   properties:
   - type: OpenAPI
