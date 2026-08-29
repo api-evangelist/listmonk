@@ -1,21 +1,21 @@
 {
   "provider": "listmonk",
   "sources": [
-    "listmonk-bounces-api-openapi.yml",
-    "listmonk-campaigns-api-openapi.yml",
-    "listmonk-import-api-openapi.yml",
-    "listmonk-lists-api-openapi.yml",
-    "listmonk-media-api-openapi.yml",
-    "listmonk-subscribers-api-openapi.yml",
-    "listmonk-templates-api-openapi.yml",
-    "listmonk-transactional-api-openapi.yml"
+    "_original/listmonk-collections-openapi.yml",
+    "_original/listmonk-openapi.yml"
   ],
   "outputs": [
+    "listmonk-admin-api-openapi.yml",
     "listmonk-bounces-api-openapi.yml",
     "listmonk-campaigns-api-openapi.yml",
     "listmonk-import-api-openapi.yml",
     "listmonk-lists-api-openapi.yml",
+    "listmonk-logs-api-openapi.yml",
+    "listmonk-maintenance-api-openapi.yml",
     "listmonk-media-api-openapi.yml",
+    "listmonk-miscellaneous-api-openapi.yml",
+    "listmonk-public-api-openapi.yml",
+    "listmonk-settings-api-openapi.yml",
     "listmonk-subscribers-api-openapi.yml",
     "listmonk-templates-api-openapi.yml",
     "listmonk-transactional-api-openapi.yml"
@@ -23,6 +23,27 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "listmonk-collections-openapi.yml: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "listmonk-openapi.yml: upgraded openapi 3.0.1 -> OpenAPI 3.2.0",
+    "tag 'Bounces' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
+    "tag 'Campaigns' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
+    "tag 'Import' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
+    "tag 'Lists' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
+    "tag 'Media' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
+    "tag 'Subscribers' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
+    "tag 'Templates' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
+    "tag 'Transactional' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied"
+  ],
+  "skipped": [
+    "listmonk-bounces-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-campaigns-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-import-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-lists-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-media-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-subscribers-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-templates-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-transactional-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

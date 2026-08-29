@@ -1,0 +1,33 @@
+openapi: 3.2.0
+info:
+  version: 1.0.0
+  title: Listmonk Logs API
+  description: The API collection for listmonk
+  license:
+    name: AGPL-3.0 license
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+servers:
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
+tags:
+- name: Logs
+  description: Logs API
+paths:
+  /logs:
+    get:
+      tags:
+      - Logs
+      description: returns the log entries stored in the log buffer
+      operationId: getLogs
+      responses:
+        '200':
+          description: stored log entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string

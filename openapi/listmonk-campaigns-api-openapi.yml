@@ -1,80 +1,145 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: listmonk Bounces Campaigns API
-  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
-  termsOfService: https://listmonk.app
-  contact:
-    name: listmonk
-    url: https://listmonk.app/docs/apis/apis/
-  license:
-    name: AGPL-3.0
-    url: https://github.com/knadh/listmonk/blob/master/LICENSE
-  version: '4.1'
+  title: Listmonk Campaigns API
+  version: '1.0'
+  description: 'Operations tagged Campaigns across 2 of this provider''s published API definitions: listmonk-collections-openapi.yml, listmonk-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
-- url: http://localhost:9000/api
-  description: Default local self-hosted instance
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
 - url: '{host}/api'
   description: Self-hosted instance
   variables:
     host:
       default: http://localhost:9000
       description: Base URL of your listmonk instance
-security:
-- BasicAuth: []
-- TokenAuth: []
 tags:
 - name: Campaigns
+  description: Campaign API
+  externalDocs:
+    url: https://listmonk.app/docs/apis/campaigns/
 paths:
   /campaigns:
     get:
+      description: handles retrieval of campaigns
       operationId: getCampaigns
-      tags:
-      - Campaigns
-      summary: Retrieve all campaigns.
       parameters:
-      - name: query
-        in: query
-        schema:
-          type: string
-      - name: status
-        in: query
+      - in: query
+        name: status
+        description: Filter campaigns by status. Multiple status values can be specified by repeating the parameter
+        required: false
         schema:
           type: array
           items:
             type: string
-      - name: page
-        in: query
+            enum:
+            - scheduled
+            - running
+            - paused
+            - cancelled
+      - in: query
+        name: no_body
+        description: When set to true, returns response without body content
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        description: Page number for paginated results.
+        required: false
         schema:
           type: integer
-      - name: per_page
-        in: query
+      - in: query
+        name: per_page
+        description: Number of items per page. Use an integer for specific page size or 'all' to retrieve all results
+        required: false
         schema:
-          type: integer
+          oneOf:
+          - type: integer
+            description: Number of items to return per page
+          - type: string
+            enum:
+            - all
+            description: Return all results without pagination
+      - in: query
+        name: tags
+        description: Filter campaigns by tags. Multiple tags can be specified by repeating the parameter
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - in: query
+        name: order
+        description: Determines the sort order of results. ASC for ascending, DESC for descending order
+        required: false
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      - in: query
+        name: order_by
+        description: Specifies the field by which to sort the campaigns. Available options are 'name', 'status', 'created_at', and 'updated_at'
+        required: false
+        schema:
+          type: string
+          enum:
+          - name
+          - status
+          - created_at
+          - updated_at
+      - in: query
+        name: query
+        description: SQL query expression to filter campaigns by custom criteria
+        required: false
+        schema:
+          type: string
+      tags:
+      - Campaigns
       responses:
         '200':
-          description: A paginated list of campaigns.
+          description: list of campaigns
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CampaignsResponse'
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Campaign'
+                      query:
+                        type: string
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      page:
+                        type: integer
     post:
+      description: handles campaign creation
       operationId: createCampaign
       tags:
       - Campaigns
-      summary: Create a new campaign.
       requestBody:
-        required: true
+        description: new campaign info
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CampaignRequest'
       responses:
         '200':
-          description: The created campaign.
+          description: new campaign object
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CampaignResponse'
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CampaignUpdate'
     delete:
       operationId: deleteCampaigns
       tags:
@@ -83,6 +148,424 @@ paths:
       responses:
         '200':
           description: Deletion result.
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /campaigns/{id}:
+    get:
+      description: handles retrieval of campaigns.
+      operationId: getCampaignById
+      tags:
+      - Campaigns
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the campaign you want to get.
+        schema:
+          type: integer
+      - in: query
+        name: no_body
+        required: false
+        description: boolean flag for response with/without body
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: campaign object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Campaign'
+    put:
+      description: handle updation of campaign
+      operationId: updateCampaignById
+      tags:
+      - Campaigns
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: the id value of campaign you want to update
+        schema:
+          type: integer
+      requestBody:
+        description: updated campaign fields
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignRequest'
+      responses:
+        '200':
+          description: updated campaign object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CampaignUpdate'
+    delete:
+      description: deletes specified campaign
+      operationId: deleteCampaignById
+      tags:
+      - Campaigns
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the campaign you want to get.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /campaigns/running/stats:
+    get:
+      description: returns stats of a given set of campaign IDs.
+      operationId: getRunningCampaignStats
+      tags:
+      - Campaigns
+      parameters:
+      - in: query
+        name: campaign_id
+        description: Campaign IDs to get stats for.
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: list of stats for given set of campaign ids
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CampaignStats'
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /campaigns/analytics/{type}:
+    get:
+      description: retrieves view counts for a campaign.
+      operationId: getCampaignAnalytics
+      tags:
+      - Campaigns
+      parameters:
+      - in: path
+        required: true
+        name: type
+        description: type of stats, either links, view, click or bounce
+        schema:
+          type: string
+          enum:
+          - links
+          - views
+          - clicks
+          - bounces
+      - in: query
+        required: true
+        name: from
+        description: start value of date range
+        schema:
+          type: string
+          format: date
+      - in: query
+        required: true
+        name: to
+        description: end value of date range
+        schema:
+          type: string
+      - in: query
+        name: id
+        description: campaign id/s to retrive view counts
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: list of stats for given set of campaign ids
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CampaignAnalyticsCount'
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /campaigns/{id}/preview:
+    get:
+      description: renders the HTML preview of a campaign body
+      operationId: previewCampaignById
+      tags:
+      - Campaigns
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the campaign you want to get the preview of
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: HTML Preview of requested campaign
+          content:
+            text/html:
+              schema:
+                type: string
+                example: <h3>Hi John!</h3>This is a   e-mail campaign. Your second name is Doe and you are from Bengaluru
+    post:
+      description: renders the HTML preview of a campaign body
+      operationId: updatePreviewCampaignById
+      tags:
+      - Campaigns
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the campaign you want to get the preview of
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        description: template id, body and content type
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                template_id:
+                  description: template id
+                  type: integer
+                content_type:
+                  description: content type
+                  type: string
+                body:
+                  description: template body
+                  type: string
+      responses:
+        '200':
+          description: HTML Preview of requested campaign
+          content:
+            text/html:
+              schema:
+                type: string
+                example: <h3>Hi John!</h3>This is a   e-mail campaign. Your second name is Doe and you are from Bengaluru
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /campaigns/{id}/text:
+    post:
+      description: renders the HTML preview of a campaign body
+      operationId: previewCampaignTextById
+      tags:
+      - Campaigns
+      requestBody:
+        required: true
+        description: template id, content type and campaign body
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                template_id:
+                  description: template id
+                  type: integer
+                content_type:
+                  description: content type
+                  type: string
+                body:
+                  description: campaign body
+                  type: string
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the campaign you want to get the preview of
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: response
+          content:
+            text/html:
+              schema:
+                type: string
+                example: <h3>Hi John!</h3><p>This is a test e-mail campaign. Your second name is Doe and you are from Bengaluru</p>
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /campaigns/{id}/status:
+    put:
+      description: handles campaign status modification
+      operationId: updateCampaignStatusById
+      tags:
+      - Campaigns
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the campaign you want to get the preview of
+        schema:
+          type: integer
+      requestBody:
+        description: campaign status update
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - scheduled
+                  - running
+                  - paused
+                  - cancelled
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Campaign'
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /campaigns/{id}/archive:
+    put:
+      description: handles campaign status modification
+      operationId: updateCampaignArchiveById
+      tags:
+      - Campaigns
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the campaign you want to get the preview of
+        schema:
+          type: integer
+      requestBody:
+        description: archive campaign related parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                archive:
+                  type: boolean
+                archive_template_id:
+                  type: integer
+                archive_meta:
+                  type: object
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /campaigns/{id}/content:
+    post:
+      description: handles campaign content (body) format conversions.
+      operationId: createCampaignContentById
+      tags:
+      - Campaigns
+      requestBody:
+        description: updated campaign content
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignContentRequest'
+      parameters:
+      - in: path
+        name: id
+        description: ID of campaign that you choose to create content
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /campaigns/{id}/test:
+    post:
+      description: handles sending of campaign message to arbitrary subscribers for testing
+      operationId: testCampaignById
+      tags:
+      - Campaigns
+      parameters:
+      - in: path
+        name: id
+        description: ID of campaign that you want to test
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        description: template id
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                template_id:
+                  description: template id
+                  type: integer
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignRequest'
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
   /campaigns/{campaign_id}:
     parameters:
     - name: campaign_id
@@ -102,6 +585,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CampaignResponse'
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
     put:
       operationId: updateCampaign
       tags:
@@ -112,7 +598,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CampaignRequest'
+              $ref: '#/components/schemas/CampaignRequest_2'
       responses:
         '200':
           description: The updated campaign.
@@ -120,6 +606,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CampaignResponse'
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
     delete:
       operationId: deleteCampaign
       tags:
@@ -128,6 +617,18 @@ paths:
       responses:
         '200':
           description: Deletion result.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
   /campaigns/{campaign_id}/preview:
     get:
       operationId: previewCampaign
@@ -143,6 +644,18 @@ paths:
       responses:
         '200':
           description: Rendered campaign HTML.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
   /campaigns/{campaign_id}/test:
     post:
       operationId: testCampaign
@@ -169,6 +682,18 @@ paths:
       responses:
         '200':
           description: Test message queued.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
   /campaigns/{campaign_id}/status:
     put:
       operationId: updateCampaignStatus
@@ -199,6 +724,18 @@ paths:
       responses:
         '200':
           description: Status updated.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
   /campaigns/{campaign_id}/archive:
     put:
       operationId: archiveCampaign
@@ -214,106 +751,261 @@ paths:
       responses:
         '200':
           description: Archive settings updated.
-  /campaigns/running/stats:
-    get:
-      operationId: getRunningCampaignStats
-      tags:
-      - Campaigns
-      summary: Retrieve stats of running campaigns.
-      parameters:
-      - name: campaign_id
-        in: query
-        schema:
-          type: array
-          items:
-            type: integer
-      responses:
-        '200':
-          description: Running campaign stats.
-  /campaigns/analytics/{type}:
-    get:
-      operationId: getCampaignAnalytics
-      tags:
-      - Campaigns
-      summary: Retrieve view, click, link, or bounce counts for campaigns.
-      parameters:
-      - name: type
-        in: path
-        required: true
-        schema:
-          type: string
-          enum:
-          - views
-          - clicks
-          - links
-          - bounces
-      - name: id
-        in: query
-        schema:
-          type: array
-          items:
-            type: integer
-      - name: from
-        in: query
-        schema:
-          type: string
-          format: date
-      - name: to
-        in: query
-        schema:
-          type: string
-          format: date
-      responses:
-        '200':
-          description: Campaign analytics.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
 components:
   schemas:
-    CampaignResponse:
+    CampaignContentRequest:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/Campaign'
-    CampaignsResponse:
+        id:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        CampaignID:
+          type: integer
+        views:
+          type: integer
+        clicks:
+          type: integer
+        lists:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+        started_at:
+          type: string
+        to_send:
+          type: integer
+        sent:
+          type: integer
+        uuid:
+          type: string
+        type:
+          type: string
+          enum:
+          - regular
+          - optin
+        name:
+          type: string
+        subject:
+          type: string
+        from_email:
+          type: string
+        body:
+          type: string
+        send_at:
+          type: string
+        status:
+          type: string
+        content_type:
+          type: string
+          enum:
+          - richtext
+          - html
+          - markdown
+          - plain
+        tags:
+          type: array
+          items:
+            type: string
+        template_id:
+          type: integer
+        messenger:
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+    CampaignRequest:
       type: object
       properties:
-        data:
+        name:
+          type: string
+        subject:
+          type: string
+        lists:
+          type: array
+          items:
+            type: number
+        from_email:
+          type: string
+        content_type:
+          type: string
+        messenger:
+          type: string
+        type:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        send_later:
+          type: boolean
+        send_at:
           type: object
           properties:
-            results:
+            headers:
               type: array
               items:
-                $ref: '#/components/schemas/Campaign'
-            total:
-              type: integer
+                type: object
+            template_id:
+              type: number
     Campaign:
       type: object
       properties:
         id:
           type: integer
-        uuid:
+        created_at:
           type: string
-        name:
+        updated_at:
           type: string
-        subject:
-          type: string
-        status:
-          type: string
-        type:
-          type: string
-        content_type:
-          type: string
+        CampaignID:
+          type: integer
+        views:
+          type: integer
+        clicks:
+          type: integer
         lists:
           type: array
           items:
             type: object
-        sent:
-          type: integer
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+        started_at:
+          type: string
         to_send:
           type: integer
-        created_at:
+        sent:
+          type: integer
+        uuid:
+          type: string
+        type:
+          type: string
+          enum:
+          - regular
+          - optin
+        name:
+          type: string
+        subject:
+          type: string
+        from_email:
+          type: string
+        body:
+          type: string
+        send_at:
+          type: string
+        status:
+          type: string
+        content_type:
+          type: string
+          enum:
+          - richtext
+          - html
+          - markdown
+          - plain
+        tags:
+          type: array
+          items:
+            type: string
+        template_id:
+          type: integer
+        messenger:
+          type: string
+    CampaignStats:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        to_send:
+          type: integer
+        sent:
+          type: integer
+        started_at:
+          type: string
+          format: date
+        updated_at:
+          type: string
+          format: date
+        rate:
+          type: integer
+        net_rate:
+          type: integer
+    CampaignAnalyticsCount:
+      type: object
+      properties:
+        campaign_id:
+          type: integer
+        count:
+          type: integer
+        timestamp:
           type: string
           format: date-time
-    CampaignRequest:
+    CampaignUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        lists:
+          type: array
+          items:
+            type: integer
+        from_email:
+          type: string
+        messenger:
+          type: string
+        type:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        send_later:
+          type: boolean
+        send_at:
+          type: object
+        headers:
+          type: array
+          items:
+            type: object
+        template_id:
+          type: integer
+        content_type:
+          type: string
+        body:
+          type: string
+        altbody:
+          type: string
+        archive:
+          type: boolean
+        archive_template_id:
+          type: integer
+        archive_meta:
+          type: object
+    CampaignRequest_2:
       type: object
       properties:
         name:
@@ -355,6 +1047,51 @@ components:
       - name
       - subject
       - lists
+    Campaign_2:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        content_type:
+          type: string
+        lists:
+          type: array
+          items:
+            type: object
+        sent:
+          type: integer
+        to_send:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    CampaignResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Campaign_2'
+    CampaignsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Campaign_2'
+            total:
+              type: integer
   securitySchemes:
     BasicAuth:
       type: http
@@ -365,3 +1102,6 @@ components:
       in: header
       name: Authorization
       description: 'Authorization header in the form: token api_user:token.'
+x-refined-from:
+- listmonk-collections-openapi.yml
+- listmonk-openapi.yml

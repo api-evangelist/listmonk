@@ -1,0 +1,66 @@
+openapi: 3.2.0
+info:
+  version: 1.0.0
+  title: Listmonk Public API
+  description: The API collection for listmonk
+  license:
+    name: AGPL-3.0 license
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+servers:
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
+tags:
+- name: Public
+  description: Listmonk Public API
+paths:
+  /public/lists:
+    get:
+      description: returns the list of public lists with minimal fields
+      operationId: getPublicLists
+      tags:
+      - Public
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uuid:
+                      type: string
+                    name:
+                      type: string
+  /public/subscription:
+    post:
+      description: handles subscription requests coming from public API calls.
+      operationId: handlePublicSubscription
+      tags:
+      - Public
+      requestBody:
+        description: subscription request parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                list_uuids:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  has_optin:
+                    type: boolean

@@ -1,0 +1,308 @@
+openapi: 3.2.0
+info:
+  version: 1.0.0
+  title: Listmonk Settings API
+  description: The API collection for listmonk
+  license:
+    name: AGPL-3.0 license
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+servers:
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
+tags:
+- name: Settings
+  description: Settings API
+paths:
+  /settings:
+    get:
+      tags:
+      - Settings
+      description: returns settings from DB
+      operationId: getSettings
+      responses:
+        '200':
+          description: settings object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Settings'
+    put:
+      tags:
+      - Settings
+      description: returns updated settings from the DB.
+      operationId: updateSettings
+      requestBody:
+        description: updated settings field values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Settings'
+      responses:
+        '200':
+          description: updated settings object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+  /settings/smtp/test:
+    post:
+      tags:
+      - Settings
+      description: test smtp settings
+      operationId: testSMTPSettings
+      requestBody:
+        description: updated SMTP settings field values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SMTPTest'
+      responses:
+        '200':
+          description: updated SMTP test settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+components:
+  schemas:
+    MailBoxBounces:
+      type: object
+      properties:
+        uuid:
+          type: string
+        enabled:
+          type: boolean
+        type:
+          type: string
+        host:
+          type: string
+        port:
+          type: integer
+        auth_protocol:
+          type: string
+        return_path:
+          type: string
+        username:
+          type: string
+        tls_enabled:
+          type: boolean
+        tls_skip_verify:
+          type: boolean
+        scan_interval:
+          type: string
+    SMTPSettings:
+      type: object
+      properties:
+        uuid:
+          type: string
+        enabled:
+          type: boolean
+        host:
+          type: string
+        hello_hostname:
+          type: string
+        port:
+          type: integer
+        auth_protocol:
+          type: string
+        username:
+          type: string
+        email_headers:
+          type: array
+          items:
+            type: object
+        max_conns:
+          type: integer
+        max_msg_retries:
+          type: integer
+        idle_timeout:
+          type: string
+        wait_timeout:
+          type: string
+        tls_type:
+          type: string
+        tls_skip_verify:
+          type: boolean
+    Settings:
+      type: object
+      properties:
+        app.site_name:
+          type: string
+        app.root_url:
+          type: string
+        app.logo_url:
+          type: string
+        app.favicon_url:
+          type: string
+        app.from_email:
+          type: string
+        app.notify_emails:
+          type: array
+          items:
+            type: string
+        app.enable_public_subscription_page:
+          type: boolean
+        app.enable_public_archive:
+          type: boolean
+        app.send_optin_confirmation:
+          type: boolean
+        app.check_updates:
+          type: boolean
+        app.lang:
+          type: string
+        app.batch_size:
+          type: integer
+        app.concurrency:
+          type: integer
+        app.max_send_errors:
+          type: integer
+        app.message_rate:
+          type: integer
+        app.message_sliding_window:
+          type: boolean
+        app.message_sliding_window_duration:
+          type: string
+        app.message_sliding_window_rate:
+          type: integer
+        privacy.individual_tracking:
+          type: boolean
+        privacy.unsubscribe_header:
+          type: boolean
+        privacy.allow_blocklist:
+          type: boolean
+        privacy.allow_preferences:
+          type: boolean
+        privacy.allow_export:
+          type: boolean
+        privacy.allow_wipe:
+          type: boolean
+        privacy.exportable:
+          type: array
+          items:
+            type: string
+        privacy.domain_blocklist:
+          type: array
+          items:
+            type: object
+        upload.provider:
+          type: string
+        upload.filesystem.upload_path:
+          type: string
+        upload.filesystem.upload_uri:
+          type: string
+        upload.s3.url:
+          type: string
+        upload.s3.public_url:
+          type: string
+        upload.s3.aws_access_key_id:
+          type: string
+        upload.s3.aws_default_region:
+          type: string
+        upload.s3.bucket:
+          type: string
+        upload.s3.bucket_domain:
+          type: string
+        upload.s3.bucket_path:
+          type: string
+        upload.s3.bucket_type:
+          type: string
+        upload.s3.expiry:
+          type: string
+        smtp:
+          type: array
+          items:
+            $ref: '#/components/schemas/SMTPSettings'
+        messengers:
+          type: array
+          items:
+            type: object
+        bounce.enabled:
+          type: boolean
+        bounce.webhooks_enabled:
+          type: boolean
+        bounce.count:
+          type: integer
+        bounce.action:
+          type: string
+        bounce.ses_enabled:
+          type: boolean
+        bounce.azure.enabled:
+          type: boolean
+        bounce.azure.shared_secret:
+          type: string
+        bounce.azure.shared_secret_header:
+          type: string
+        bounce.sendgrid_enabled:
+          type: boolean
+        bounce.sendgrid_key:
+          type: string
+        bounce.forwardemail_enabled:
+          type: boolean
+        bounce.forwardemail_key:
+          type: string
+        bounce.postmark_enabled:
+          type: boolean
+        bounce.postmark_username:
+          type: string
+        bounce.postmark_password:
+          type: string
+        bounce.mailboxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MailBoxBounces'
+        appearance.admin.custom_css:
+          type: string
+        appearance.admin.custom_js:
+          type: string
+        appearance.public.custom_css:
+          type: string
+        appearance.public.custom_js:
+          type: string
+    SMTPTest:
+      type: object
+      properties:
+        uuid:
+          type: string
+        enabled:
+          type: boolean
+        host:
+          type: string
+        hello_hostname:
+          type: string
+        port:
+          type: integer
+        auth_protocol:
+          type: string
+        username:
+          type: string
+        email_headers:
+          type: array
+          items:
+            type: object
+        max_conns:
+          type: integer
+        max_msg_retries:
+          type: integer
+        idle_timeout:
+          type: string
+        wait_timeout:
+          type: string
+        tls_type:
+          type: string
+        tls_skip_verify:
+          type: boolean
+        strEmailHeaders:
+          type: string
+        password:
+          type: string
+        email:
+          type: string

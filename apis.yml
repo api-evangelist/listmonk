@@ -178,6 +178,66 @@ apis:
     url: https://listmonk.app/docs/apis/apis/
   - type: Documentation
     url: https://listmonk.app/docs/apis/transactional/
+- aid: listmonk:listmonk-admin-api
+  name: listmonk Admin API
+  description: Admin API
+  humanURL: https://listmonk.app/docs/apis/bounces/
+  baseURL: https://{listmonk_host}/api
+  tags:
+  - Admin
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-admin-api-openapi.yml
+- aid: listmonk:listmonk-logs-api
+  name: listmonk Logs API
+  description: Logs API
+  humanURL: https://listmonk.app/docs/apis/bounces/
+  baseURL: https://{listmonk_host}/api
+  tags:
+  - Logs
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-logs-api-openapi.yml
+- aid: listmonk:listmonk-maintenance-api
+  name: listmonk Maintenance API
+  description: Maintenance API
+  humanURL: https://listmonk.app/docs/apis/bounces/
+  baseURL: https://{listmonk_host}/api
+  tags:
+  - Maintenance
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-maintenance-api-openapi.yml
+- aid: listmonk:listmonk-miscellaneous-api
+  name: listmonk Miscellaneous API
+  description: Misc API
+  humanURL: https://listmonk.app/docs/apis/bounces/
+  baseURL: https://{listmonk_host}/api
+  tags:
+  - Miscellaneous
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-miscellaneous-api-openapi.yml
+- aid: listmonk:listmonk-public-api
+  name: listmonk Public API
+  description: Listmonk Public API
+  humanURL: https://listmonk.app/docs/apis/bounces/
+  baseURL: https://{listmonk_host}/api
+  tags:
+  - Public
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-public-api-openapi.yml
+- aid: listmonk:listmonk-settings-api
+  name: listmonk Settings API
+  description: Settings API
+  humanURL: https://listmonk.app/docs/apis/bounces/
+  baseURL: https://{listmonk_host}/api
+  tags:
+  - Settings
+  properties:
+  - type: OpenAPI
+    url: openapi/listmonk-settings-api-openapi.yml
 common:
 - type: AgenticAccess
   url: agentic-access/listmonk-agentic-access.yml

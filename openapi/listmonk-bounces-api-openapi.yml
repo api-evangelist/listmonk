@@ -1,75 +1,172 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: listmonk Bounces API
-  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
-  termsOfService: https://listmonk.app
-  contact:
-    name: listmonk
-    url: https://listmonk.app/docs/apis/apis/
-  license:
-    name: AGPL-3.0
-    url: https://github.com/knadh/listmonk/blob/master/LICENSE
-  version: '4.1'
+  title: Listmonk Bounces API
+  version: '1.0'
+  description: 'Operations tagged Bounces across 2 of this provider''s published API definitions: listmonk-collections-openapi.yml, listmonk-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
-- url: http://localhost:9000/api
-  description: Default local self-hosted instance
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
 - url: '{host}/api'
   description: Self-hosted instance
   variables:
     host:
       default: http://localhost:9000
       description: Base URL of your listmonk instance
-security:
-- BasicAuth: []
-- TokenAuth: []
 tags:
 - name: Bounces
+  description: Bounce API
 paths:
   /bounces:
     get:
+      description: handles retrieval of bounce records.
       operationId: getBounces
       tags:
       - Bounces
-      summary: Retrieve bounce records.
       parameters:
-      - name: campaign_id
-        in: query
+      - in: query
+        name: campaign_id
+        description: Numeric identifier for retrieving bounce records associated with a specific campaign
         schema:
           type: integer
-      - name: page
-        in: query
+      - in: query
+        name: page
+        description: Page number for paginated results. Start from 1 for the first page
         schema:
           type: integer
-      - name: per_page
-        in: query
+      - in: query
+        name: per_page
+        description: Number of items per page. Use an integer for specific page size or 'all' to retrieve all results
         schema:
-          type: integer
+          oneOf:
+          - type: integer
+            description: Number of items to return per page
+          - type: string
+            enum:
+            - all
+            description: Return all results without pagination
+      - in: query
+        name: source
+        description: Filter bounce records by their source of origin
+        schema:
+          type: string
+      - in: query
+        name: order_by
+        description: Specifies the field by which to sort the bounce records. Available options are 'email', 'campaign_name', 'source', and 'created_at'
+        schema:
+          type: string
+          enum:
+          - email
+          - campaign_name
+          - source
+          - created_at
+      - in: query
+        name: order
+        description: Determines the sort order of results. Use 'asc' for ascending or 'desc' for descending order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
       responses:
         '200':
-          description: A paginated list of bounce records.
+          description: list of bounce records
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BouncesResponse'
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Bounce'
+                      query:
+                        type: string
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      page:
+                        type: integer
     delete:
+      description: handles deletion of bounce records.
       operationId: deleteBounces
       tags:
       - Bounces
-      summary: Delete bounce records by ID or all.
       parameters:
-      - name: id
-        in: query
-        schema:
-          type: array
-          items:
-            type: integer
-      - name: all
-        in: query
+      - in: query
+        name: all
+        description: flag for multiple bounce record deletion
         schema:
           type: boolean
+      - in: query
+        name: id
+        description: list of bounce ids to delete
+        schema:
+          type: string
       responses:
         '200':
-          description: Deletion result.
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /bounces/{id}:
+    get:
+      description: handles retrieval of bounce record by id
+      operationId: getBounceById
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the bounce you want to retreive.
+        schema:
+          type: integer
+      tags:
+      - Bounces
+      responses:
+        '200':
+          description: bounce object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Bounce'
+    delete:
+      description: handles bounce deletion, either a single one (ID in the URI), or a list.
+      operationId: deleteBounceById
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the bounce you want to delete.
+        schema:
+          type: integer
+      tags:
+      - Bounces
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
   /bounces/{bounce_id}:
     delete:
       operationId: deleteBounce
@@ -85,21 +182,56 @@ paths:
       responses:
         '200':
           description: Deletion result.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
 components:
   schemas:
-    BouncesResponse:
+    Bounce:
       type: object
       properties:
-        data:
-          type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: '#/components/schemas/Bounce'
-            total:
-              type: integer
-    Bounce:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              type:
+                type: string
+              source:
+                type: string
+              meta:
+                type: object
+              created_at:
+                type: string
+              email:
+                type: string
+              subscriber_uuid:
+                type: string
+              subscriber_id:
+                type: integer
+              campaign:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+              campaign_uuid:
+                type: string
+              total:
+                type: integer
+    Bounce_2:
       type: object
       properties:
         id:
@@ -121,6 +253,18 @@ components:
         created_at:
           type: string
           format: date-time
+    BouncesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Bounce_2'
+            total:
+              type: integer
   securitySchemes:
     BasicAuth:
       type: http
@@ -131,3 +275,6 @@ components:
       in: header
       name: Authorization
       description: 'Authorization header in the form: token api_user:token.'
+x-refined-from:
+- listmonk-collections-openapi.yml
+- listmonk-openapi.yml

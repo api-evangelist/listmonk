@@ -1,46 +1,46 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: listmonk Bounces Import API
-  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
-  termsOfService: https://listmonk.app
-  contact:
-    name: listmonk
-    url: https://listmonk.app/docs/apis/apis/
-  license:
-    name: AGPL-3.0
-    url: https://github.com/knadh/listmonk/blob/master/LICENSE
-  version: '4.1'
+  title: Listmonk Import API
+  version: '1.0'
+  description: 'Operations tagged Import across 2 of this provider''s published API definitions: listmonk-collections-openapi.yml, listmonk-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
-- url: http://localhost:9000/api
-  description: Default local self-hosted instance
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
 - url: '{host}/api'
   description: Self-hosted instance
   variables:
     host:
       default: http://localhost:9000
       description: Base URL of your listmonk instance
-security:
-- BasicAuth: []
-- TokenAuth: []
 tags:
 - name: Import
+  description: Import API
+  externalDocs:
+    url: https://listmonk.app/docs/apis/lists/
 paths:
   /import/subscribers:
     get:
-      operationId: getImportStatus
+      description: returns import status.
+      operationId: getImportSubscribers
       tags:
       - Import
-      summary: Retrieve the status of an ongoing import.
       responses:
         '200':
-          description: Import status.
+          description: import status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ImportStatus'
     post:
+      description: handles the uploading and bulk importing of a ZIP file of one or more CSV files.
       operationId: importSubscribers
       tags:
       - Import
-      summary: Upload a CSV (optionally ZIP-compressed) file to import subscribers.
       requestBody:
-        required: true
+        description: uploads and bulk imports of compressed CSV files
         content:
           multipart/form-data:
             schema:
@@ -48,34 +48,75 @@ paths:
               properties:
                 params:
                   type: string
-                  description: JSON-encoded import params (mode
-                  lists: null
-                  delimiter: null
-                  overwrite).: null
+                  description: JSON string containing import parameters for more detail https://listmonk.app/docs/apis/import/#params-json-string
+                  example: '{"mode":"subscribe", "subscription_status":"confirmed", "delim":",", "lists":[1, 2], "overwrite": true}'
                 file:
                   type: string
                   format: binary
+                  description: File for upload.
       responses:
         '200':
-          description: Import started.
+          description: updated import status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ImportStatus'
     delete:
-      operationId: stopImport
+      description: sends a stop signal to the importer.
+      operationId: stopImportSubscribers
       tags:
       - Import
-      summary: Stop and delete an ongoing import.
       responses:
         '200':
-          description: Import stopped.
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ImportStatus'
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
   /import/subscribers/logs:
     get:
-      operationId: getImportLogs
+      description: returns import logs from an ongoing import
+      operationId: getImportSubscriberLogs
       tags:
       - Import
-      summary: Retrieve logs from an ongoing import.
       responses:
         '200':
-          description: Import logs.
+          description: import statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
 components:
+  schemas:
+    ImportStatus:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+            total:
+              type: integer
+            imported:
+              type: integer
+            status:
+              type: string
   securitySchemes:
     BasicAuth:
       type: http
@@ -86,3 +127,6 @@ components:
       in: header
       name: Authorization
       description: 'Authorization header in the form: token api_user:token.'
+x-refined-from:
+- listmonk-collections-openapi.yml
+- listmonk-openapi.yml

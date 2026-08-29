@@ -1,0 +1,105 @@
+openapi: 3.2.0
+info:
+  version: 1.0.0
+  title: Listmonk Maintenance API
+  description: The API collection for listmonk
+  license:
+    name: AGPL-3.0 license
+    url: https://github.com/knadh/listmonk/blob/master/LICENSE
+servers:
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
+tags:
+- name: Maintenance
+  description: Maintenance API
+paths:
+  /maintenance/subscribers/{type}:
+    delete:
+      description: garbage collects (deletes) orphaned or blocklisted subscribers.
+      operationId: deleteGCSubscribers
+      tags:
+      - Maintenance
+      parameters:
+      - in: path
+        name: type
+        description: type of GC collected subscribers
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+  /maintenance/analytics/{type}:
+    delete:
+      description: garbage collects (deletes) campaign analytics.
+      operationId: deleteCampaignAnalyticsByType
+      tags:
+      - Maintenance
+      requestBody:
+        description: date parameter
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                before_date:
+                  type: string
+                  format: date
+      parameters:
+      - in: path
+        name: type
+        description: type of GC collected subscribers
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+  /maintenance/subscriptions/unconfirmed:
+    delete:
+      description: garbage collects (deletes) orphaned or blocklisted subscribers.
+      operationId: deleteUnconfirmedSubscriptions
+      tags:
+      - Maintenance
+      requestBody:
+        required: true
+        description: date parameter
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                before_date:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer

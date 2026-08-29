@@ -1,65 +1,114 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: listmonk Bounces Media API
-  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
-  termsOfService: https://listmonk.app
-  contact:
-    name: listmonk
-    url: https://listmonk.app/docs/apis/apis/
-  license:
-    name: AGPL-3.0
-    url: https://github.com/knadh/listmonk/blob/master/LICENSE
-  version: '4.1'
+  title: Listmonk Media API
+  version: '1.0'
+  description: 'Operations tagged Media across 2 of this provider''s published API definitions: listmonk-collections-openapi.yml, listmonk-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
-- url: http://localhost:9000/api
-  description: Default local self-hosted instance
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
 - url: '{host}/api'
   description: Self-hosted instance
   variables:
     host:
       default: http://localhost:9000
       description: Base URL of your listmonk instance
-security:
-- BasicAuth: []
-- TokenAuth: []
 tags:
 - name: Media
+  description: Media API
+  externalDocs:
+    url: https://listmonk.app/docs/apis/media/
 paths:
   /media:
     get:
+      description: handles retrieval of uploaded media.
       operationId: getMedia
       tags:
       - Media
-      summary: Retrieve uploaded media files.
       responses:
         '200':
-          description: A list of media files.
+          description: response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MediaResponse'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MediaFileObject'
     post:
+      description: handles media file uploads.
       operationId: uploadMedia
       tags:
       - Media
-      summary: Upload a media file.
       requestBody:
-        required: true
+        description: upload media file
         content:
           multipart/form-data:
             schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
+              type: string
+              format: binary
       responses:
         '200':
-          description: The uploaded media file.
+          description: response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MediaResponse'
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MediaFileObject'
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /media/{id}:
+    get:
+      description: handles retrieval of uploaded media.
+      operationId: getMediaById
+      tags:
+      - Media
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: media file id
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MediaFileObject'
+    delete:
+      description: handles deletion of uploaded media.
+      operationId: deleteMediaById
+      tags:
+      - Media
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the list you want to delete.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
   /media/{media_id}:
     parameters:
     - name: media_id
@@ -75,6 +124,9 @@ paths:
       responses:
         '200':
           description: The media file.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
     delete:
       operationId: deleteMedia
       tags:
@@ -83,8 +135,45 @@ paths:
       responses:
         '200':
           description: Deletion result.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
 components:
   schemas:
+    MediaFileObject:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        filename:
+          type: string
+        content_type:
+          type: string
+        created_at:
+          type: string
+        thumb_url:
+          type: string
+        thumb_uri:
+          type: string
+        provider:
+          type: string
+        meta:
+          type: object
+        url:
+          type: string
+        uri:
+          type: string
     Media:
       type: object
       properties:
@@ -122,3 +211,6 @@ components:
       in: header
       name: Authorization
       description: 'Authorization header in the form: token api_user:token.'
+x-refined-from:
+- listmonk-collections-openapi.yml
+- listmonk-openapi.yml

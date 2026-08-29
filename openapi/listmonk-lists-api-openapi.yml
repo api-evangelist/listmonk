@@ -1,74 +1,130 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: listmonk Bounces Lists API
-  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
-  termsOfService: https://listmonk.app
-  contact:
-    name: listmonk
-    url: https://listmonk.app/docs/apis/apis/
-  license:
-    name: AGPL-3.0
-    url: https://github.com/knadh/listmonk/blob/master/LICENSE
-  version: '4.1'
+  title: Listmonk Lists API
+  version: '1.0'
+  description: 'Operations tagged Lists across 2 of this provider''s published API definitions: listmonk-collections-openapi.yml, listmonk-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
-- url: http://localhost:9000/api
-  description: Default local self-hosted instance
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
 - url: '{host}/api'
   description: Self-hosted instance
   variables:
     host:
       default: http://localhost:9000
       description: Base URL of your listmonk instance
-security:
-- BasicAuth: []
-- TokenAuth: []
 tags:
 - name: Lists
+  description: Subscriber List API
+  externalDocs:
+    url: https://listmonk.app/docs/apis/lists/
 paths:
   /lists:
     get:
+      description: retrieves lists with additional metadata like subscriber counts. This may be slow.
       operationId: getLists
       tags:
       - Lists
-      summary: Retrieve all lists.
       parameters:
-      - name: query
-        in: query
+      - in: query
+        name: page
+        description: total number of pages
+        required: false
+        schema:
+          type: integer
+      - in: query
+        name: per_page
+        description: number of items per page
+        required: false
+        schema:
+          oneOf:
+          - type: integer
+            description: Number of items to return per page
+          - type: string
+            enum:
+            - all
+            description: Return all results without pagination
+      - in: query
+        name: query
+        description: Optional string to search a list by name.
+        required: false
         schema:
           type: string
-      - name: page
-        in: query
+      - in: query
+        name: order_by
+        description: Field to sort results by. name|status|created_at|updated_at
+        required: false
         schema:
-          type: integer
-      - name: per_page
-        in: query
+          type: string
+          enum:
+          - name
+          - status
+          - created_at
+          - updated_at
+      - in: query
+        name: order
+        description: ASC|DESC Sort by ascending or descending order.
+        required: false
         schema:
-          type: integer
+          type: string
+          enum:
+          - ASC
+          - DESC
+      - in: query
+        name: minimal
+        description: When set to true, returns response without body content
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: tag
+        description: Tags to filter lists. Repeat in the query for multiple values.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
       responses:
         '200':
-          description: A paginated list of lists.
+          description: list of metadata
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListsResponse'
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/List'
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      page:
+                        type: integer
     post:
+      description: handles list creation
       operationId: createList
       tags:
       - Lists
-      summary: Create a new list.
       requestBody:
-        required: true
+        description: new list info
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ListRequest'
+              $ref: '#/components/schemas/NewList'
       responses:
         '200':
-          description: The created list.
+          description: updated list object
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListResponse'
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/List'
     delete:
       operationId: deleteLists
       tags:
@@ -84,51 +140,91 @@ paths:
       responses:
         '200':
           description: Deletion result.
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
   /lists/{list_id}:
+    get:
+      description: retrieves lists with additional metadata like subscriber counts. This may be slow.
+      operationId: getListById
+      tags:
+      - Lists
+      parameters:
+      - in: path
+        name: list_id
+        required: true
+        description: The id value of the list you want to retreive.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: list object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/List'
+    put:
+      description: handles list modification
+      operationId: updateListById
+      tags:
+      - Lists
+      parameters:
+      - in: path
+        name: list_id
+        required: true
+        description: The id value of the list you want to update
+        schema:
+          type: integer
+      requestBody:
+        description: updated list field values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+      responses:
+        '200':
+          description: updated list object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/List'
+    delete:
+      description: handles list deletion, either a single one (ID in the URI), or a list.
+      operationId: deleteListById
+      tags:
+      - Lists
+      parameters:
+      - in: path
+        name: list_id
+        required: true
+        description: The id value of the lists you want to delete.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
     parameters:
     - name: list_id
       in: path
       required: true
       schema:
         type: integer
-    get:
-      operationId: getList
-      tags:
-      - Lists
-      summary: Retrieve a specific list.
-      responses:
-        '200':
-          description: The list.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListResponse'
-    put:
-      operationId: updateList
-      tags:
-      - Lists
-      summary: Update an existing list.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ListRequest'
-      responses:
-        '200':
-          description: The updated list.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListResponse'
-    delete:
-      operationId: deleteList
-      tags:
-      - Lists
-      summary: Delete a specific list.
-      responses:
-        '200':
-          description: Deletion result.
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
   /public/lists:
     get:
       operationId: getPublicLists
@@ -139,13 +235,47 @@ paths:
       responses:
         '200':
           description: Public lists.
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
 components:
   schemas:
+    NewList:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - public
+          - private
+        optin:
+          type: string
+          enum:
+          - single
+          - double
+        tags:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
     List:
       type: object
       properties:
         id:
           type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
         uuid:
           type: string
         name:
@@ -160,9 +290,8 @@ components:
             type: string
         subscriber_count:
           type: integer
-        created_at:
+        description:
           type: string
-          format: date-time
     ListRequest:
       type: object
       properties:
@@ -186,11 +315,33 @@ components:
           type: string
       required:
       - name
+    List_2:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        optin:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        subscriber_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
     ListResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/List'
+          $ref: '#/components/schemas/List_2'
     ListsResponse:
       type: object
       properties:
@@ -200,7 +351,7 @@ components:
             results:
               type: array
               items:
-                $ref: '#/components/schemas/List'
+                $ref: '#/components/schemas/List_2'
             total:
               type: integer
   securitySchemes:
@@ -213,3 +364,6 @@ components:
       in: header
       name: Authorization
       description: 'Authorization header in the form: token api_user:token.'
+x-refined-from:
+- listmonk-collections-openapi.yml
+- listmonk-openapi.yml

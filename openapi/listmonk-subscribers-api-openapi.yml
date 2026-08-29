@@ -1,96 +1,541 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: listmonk Bounces Subscribers API
-  description: 'REST API for listmonk, the free and open-source, self-hosted newsletter and mailing-list manager. All endpoints are served by a self-hosted listmonk instance under the /api path and are secured with HTTP Basic auth using an API user and token (or an equivalent `Authorization: token api_user:token` header). There is no hosted SaaS; replace the server host with your own instance.'
-  termsOfService: https://listmonk.app
-  contact:
-    name: listmonk
-    url: https://listmonk.app/docs/apis/apis/
-  license:
-    name: AGPL-3.0
-    url: https://github.com/knadh/listmonk/blob/master/LICENSE
-  version: '4.1'
+  title: Listmonk Subscribers API
+  version: '1.0'
+  description: 'Operations tagged Subscribers across 2 of this provider''s published API definitions: listmonk-collections-openapi.yml, listmonk-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
-- url: http://localhost:9000/api
-  description: Default local self-hosted instance
+- description: Listmonk Developement Server
+  url: http://localhost:9000/api
 - url: '{host}/api'
   description: Self-hosted instance
   variables:
     host:
       default: http://localhost:9000
       description: Base URL of your listmonk instance
-security:
-- BasicAuth: []
-- TokenAuth: []
 tags:
 - name: Subscribers
+  description: Subscribers API
+  externalDocs:
+    url: https://listmonk.app/docs/apis/subscribers/
 paths:
   /subscribers:
     get:
-      operationId: getSubscribers
       tags:
       - Subscribers
-      summary: Query and retrieve subscribers.
+      description: returns all subscribers.
+      operationId: getSubscribers
       parameters:
-      - name: query
-        in: query
+      - in: query
+        name: page
+        description: Page number for paginated results.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - in: query
+        name: per_page
+        description: Number of items per page. Use an integer for specific page size or 'all' to retrieve all results
+        required: false
+        schema:
+          oneOf:
+          - type: integer
+            description: Number of items to return per page
+          - type: string
+            enum:
+            - all
+            description: Return all results without pagination
+      - in: query
+        name: query
+        description: query subscribers with an SQL expression.
+        required: false
         schema:
           type: string
-        description: SQL expression to filter subscribers, e.g. subscribers.name LIKE '%john%'.
-      - name: list_id
-        in: query
+      - in: query
+        name: order_by
+        description: Result sorting field. Options are name, status, created_at, updated_at
+        required: false
+        schema:
+          type: string
+          enum:
+          - name
+          - status
+          - created_at
+          - updated_at
+      - in: query
+        name: order
+        description: ASC|DESC Sort by ascending or descending order.
+        required: false
+        schema:
+          type: string
+          enum:
+          - ASC
+          - DESC
+      - in: query
+        name: subscription_status
+        description: Subscription status to filter by if there are one or more list_ids.
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: list_id
+        description: ID of lists to filter by. Repeat in the query for multiple values.
+        required: false
         schema:
           type: array
           items:
             type: integer
-      - name: page
-        in: query
-        schema:
-          type: integer
-      - name: per_page
-        in: query
-        schema:
-          type: integer
       responses:
         '200':
-          description: A paginated list of subscribers.
+          description: subscribers list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubscribersResponse'
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Subscriber'
+                      query:
+                        type: string
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      page:
+                        type: integer
     post:
+      description: handles creation of new subscriber
       operationId: createSubscriber
       tags:
       - Subscribers
-      summary: Create a new subscriber.
       requestBody:
-        required: true
+        description: new subscriber info
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubscriberRequest'
+              $ref: '#/components/schemas/NewSubscriber'
       responses:
         '200':
-          description: The created subscriber.
+          description: subscriber object
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubscriberResponse'
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Subscriber'
     delete:
-      operationId: deleteSubscribers
+      description: handles subscribers deletion
+      operationId: deleteSubscriberByList
       tags:
       - Subscribers
-      summary: Delete multiple subscribers by ID.
       parameters:
-      - name: id
-        in: query
+      - in: query
+        name: id
+        required: true
+        description: subscriber id/s to be deleted
         schema:
-          type: array
-          items:
-            type: integer
+          type: string
       responses:
         '200':
-          description: Deletion result.
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/{id}:
+    get:
+      description: handles the retrieval of a single subscriber by ID.
+      operationId: getSubscriberById
+      tags:
+      - Subscribers
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the subscriber you want to get.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: gets a single subscriber.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Subscriber'
+    put:
+      description: modify subscriber data
+      operationId: updateSubscriberById
+      tags:
+      - Subscribers
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id of subscriber to update
+        schema:
+          type: integer
+      requestBody:
+        description: new subscriber info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubscriber'
+      responses:
+        '200':
+          description: returns updated subscriber.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Subscriber'
+    delete:
+      description: handles subscriber deletion based on id
+      operationId: deleteSubscriberById
+      tags:
+      - Subscribers
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the subscriber you want to get.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/lists:
+    put:
+      description: handles bulk addition or removal of subscribers
+      operationId: manageSubscriberLists
+      tags:
+      - Subscribers
+      requestBody:
+        description: The list of subscribers details to add or remove
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberQueryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/lists/{id}:
+    put:
+      description: handles bulk addition or removal of subscribers for a specified list id
+      operationId: manageSubscriberListById
+      tags:
+      - Subscribers
+      requestBody:
+        description: The list of subscribers to add or remove
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberQueryRequest'
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id of list you want to update
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/blocklist:
+    put:
+      description: handles blocklisting of subscriber list
+      operationId: manageBlocklistBySubscriberList
+      tags:
+      - Subscribers
+      requestBody:
+        description: The list of subscribers to blocklist
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberQueryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/{id}/blocklist:
+    put:
+      description: handles the blocklisting of one or more subscribers.
+      operationId: manageBlocklistSubscribersById
+      tags:
+      - Subscribers
+      requestBody:
+        description: The id of subscriber to add or remove
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberQueryRequest'
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of the subscriber you want to blocklist.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/{id}/export:
+    get:
+      description: retrieves a subscriber's profile
+      operationId: exportSubscriberDataByID
+      tags:
+      - Subscribers
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: The id value of subscriber profile you want to export
+        schema:
+          type: integer
+      responses:
+        '200':
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="data.json"
+          description: subscriber data object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriberData'
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/{id}/bounces:
+    get:
+      description: retrieves a subscriber's bounce records
+      operationId: getSubscriberBouncesById
+      tags:
+      - Subscribers
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: subscriber id
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: list of bounce records of a subscriber
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bounce'
+    delete:
+      description: deletes a subscriber's bounce records
+      operationId: deleteSubscriberBouncesById
+      tags:
+      - Subscribers
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: subscriber id
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/{id}/optin:
+    post:
+      description: sends an optin confirmation e-mail to a subscriber.
+      operationId: subscriberSendOptinById
+      tags:
+      - Subscribers
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: sends an optin confirmation e-mail to a subscriber
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/query/delete:
+    post:
+      description: bulk deletes based on an arbitrary SQL expression.
+      operationId: deleteSubscriberByQuery
+      tags:
+      - Subscribers
+      requestBody:
+        description: Arbitrary SQL expression.
+        content:
+          text/plain:
+            schema:
+              type: string
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberQueryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/query/blocklist:
+    put:
+      description: bulk blocklists subscribers based on an arbitrary SQL expression.
+      operationId: blocklistSubscribersQuery
+      tags:
+      - Subscribers
+      requestBody:
+        description: Arbitrary SQL expression.
+        content:
+          text/plain:
+            schema:
+              type: string
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberQueryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
+  /subscribers/query/lists:
+    put:
+      description: bulk adds/removes/unsubscribes subscribers from one or more lists based on an arbitrary SQL expression.
+      operationId: manageSubscriberListsByQuery
+      tags:
+      - Subscribers
+      requestBody:
+        description: Arbitrary SQL expression.
+        content:
+          text/plain:
+            schema:
+              type: string
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberQueryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+    servers:
+    - description: Listmonk Developement Server
+      url: http://localhost:9000/api
   /subscribers/{subscriber_id}:
     parameters:
     - name: subscriber_id
@@ -110,6 +555,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriberResponse'
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
     put:
       operationId: updateSubscriber
       tags:
@@ -128,6 +576,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriberResponse'
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
     delete:
       operationId: deleteSubscriber
       tags:
@@ -136,6 +587,18 @@ paths:
       responses:
         '200':
           description: Deletion result.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
   /subscribers/{subscriber_id}/optin:
     post:
       operationId: sendSubscriberOptin
@@ -151,6 +614,18 @@ paths:
       responses:
         '200':
           description: Opt-in email queued.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
   /subscribers/{subscriber_id}/export:
     get:
       operationId: exportSubscriber
@@ -166,36 +641,18 @@ paths:
       responses:
         '200':
           description: Exported subscriber data.
-  /subscribers/lists:
-    put:
-      operationId: manageSubscriberLists
-      tags:
-      - Subscribers
-      summary: Add, remove, or unsubscribe subscribers from lists.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubscriberListsRequest'
-      responses:
-        '200':
-          description: List membership updated.
-  /subscribers/query/lists:
-    put:
-      operationId: manageSubscriberListsByQuery
-      tags:
-      - Subscribers
-      summary: Add, remove, or unsubscribe subscribers from lists by SQL query.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubscriberListsRequest'
-      responses:
-        '200':
-          description: List membership updated.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
   /subscribers/{subscriber_id}/blocklist:
     put:
       operationId: blocklistSubscriber
@@ -211,46 +668,204 @@ paths:
       responses:
         '200':
           description: Subscriber blocklisted.
-  /subscribers/blocklist:
-    put:
-      operationId: blocklistSubscribers
-      tags:
-      - Subscribers
-      summary: Blocklist multiple subscribers by ID.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ids:
-                  type: array
-                  items:
-                    type: integer
-      responses:
-        '200':
-          description: Subscribers blocklisted.
-  /subscribers/query/blocklist:
-    put:
-      operationId: blocklistSubscribersByQuery
-      tags:
-      - Subscribers
-      summary: Blocklist subscribers matching a SQL expression.
-      responses:
-        '200':
-          description: Subscribers blocklisted.
-  /subscribers/query/delete:
-    post:
-      operationId: deleteSubscribersByQuery
-      tags:
-      - Subscribers
-      summary: Delete subscribers matching a SQL expression.
-      responses:
-        '200':
-          description: Subscribers deleted.
+      security:
+      - BasicAuth: []
+      - TokenAuth: []
+    servers:
+    - url: http://localhost:9000/api
+      description: Default local self-hosted instance
+    - url: '{host}/api'
+      description: Self-hosted instance
+      variables:
+        host:
+          default: http://localhost:9000
+          description: Base URL of your listmonk instance
 components:
   schemas:
+    Subscriptions:
+      type: object
+      properties:
+        subscription_status:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+    NewSubscriber:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        lists:
+          type: array
+          items:
+            type: integer
+        list_uuids:
+          type: array
+          items:
+            type: string
+        preconfirm_subscriptions:
+          type: boolean
+        attribs:
+          type: object
+          additionalProperties: true
+    Bounce:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              type:
+                type: string
+              source:
+                type: string
+              meta:
+                type: object
+              created_at:
+                type: string
+              email:
+                type: string
+              subscriber_uuid:
+                type: string
+              subscriber_id:
+                type: integer
+              campaign:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+              campaign_uuid:
+                type: string
+              total:
+                type: integer
+    SubscriberQueryRequest:
+      type: object
+      properties:
+        query:
+          type: string
+        ids:
+          type: array
+          description: The ids of the subscribers to be modified.
+          items:
+            type: integer
+        action:
+          type: string
+          enum:
+          - add
+          - remove
+          - unsubscribe
+          description: Whether to add, remove, or unsubscribe the users.
+        target_list_ids:
+          type: integer
+          description: The ids of the lists to be modified.
+          items:
+            type: integer
+        status:
+          type: string
+          enum:
+          - confirmed
+          - unconfirmed
+          - unsubscribed
+          description: confirmed, unconfirmed, or unsubscribed status.
+    SubscriberData:
+      type: object
+      properties:
+        email:
+          type: string
+        profile:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriberProfile'
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscriptions'
+        campaign_views:
+          type: array
+          items:
+            type: object
+        link_clicks:
+          type: array
+          items:
+            type: object
     Subscriber:
+      type: object
+      properties:
+        id:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        uuid:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        attribs:
+          type: object
+          additionalProperties: true
+        status:
+          type: string
+        lists:
+          type: array
+          items:
+            type: object
+            properties:
+              subscription_status:
+                type: string
+              id:
+                type: integer
+              uuid:
+                type: string
+              name:
+                type: string
+              type:
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              created_at:
+                type: string
+              updated_at:
+                type: string
+    UpdateSubscriber:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        lists:
+          type: array
+          items:
+            type: integer
+        list_uuids:
+          type: array
+          items:
+            type: string
+        preconfirm_subscriptions:
+          type: boolean
+        attribs:
+          type: object
+          additionalProperties: true
+    SubscriberProfile:
       type: object
       properties:
         id:
@@ -261,21 +876,15 @@ components:
           type: string
         name:
           type: string
-        status:
-          type: string
         attribs:
           type: object
           additionalProperties: true
-        lists:
-          type: array
-          items:
-            type: object
+        status:
+          type: string
         created_at:
           type: string
-          format: date-time
         updated_at:
           type: string
-          format: date-time
     SubscribersResponse:
       type: object
       properties:
@@ -285,43 +894,18 @@ components:
             results:
               type: array
               items:
-                $ref: '#/components/schemas/Subscriber'
+                $ref: '#/components/schemas/Subscriber_2'
             total:
               type: integer
             page:
               type: integer
             per_page:
               type: integer
-    SubscriberListsRequest:
-      type: object
-      properties:
-        ids:
-          type: array
-          items:
-            type: integer
-        query:
-          type: string
-        action:
-          type: string
-          enum:
-          - add
-          - remove
-          - unsubscribe
-        target_list_ids:
-          type: array
-          items:
-            type: integer
-        status:
-          type: string
-          enum:
-          - unconfirmed
-          - confirmed
-          - unsubscribed
     SubscriberResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/Subscriber'
+          $ref: '#/components/schemas/Subscriber_2'
     SubscriberRequest:
       type: object
       properties:
@@ -349,6 +933,57 @@ components:
           type: boolean
       required:
       - email
+    SubscriberListsRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+        query:
+          type: string
+        action:
+          type: string
+          enum:
+          - add
+          - remove
+          - unsubscribe
+        target_list_ids:
+          type: array
+          items:
+            type: integer
+        status:
+          type: string
+          enum:
+          - unconfirmed
+          - confirmed
+          - unsubscribed
+    Subscriber_2:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        attribs:
+          type: object
+          additionalProperties: true
+        lists:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
   securitySchemes:
     BasicAuth:
       type: http
@@ -359,3 +994,6 @@ components:
       in: header
       name: Authorization
       description: 'Authorization header in the form: token api_user:token.'
+x-refined-from:
+- listmonk-collections-openapi.yml
+- listmonk-openapi.yml
