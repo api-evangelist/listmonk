@@ -7,6 +7,19 @@ description: listmonk is a free and open-source, self-hosted newsletter and mail
   self-hosted instance (Basic auth with an API user and token) covering subscribers, lists, campaigns,
   templates, media, CSV import, transactional messages, and bounces. There is no hosted SaaS - users run
   their own instance.
+deliveryModel:
+  model: unknown
+  open_source: unknown
+  commercial: true
+  callable_host: false
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - openapi
+  - pricing
+  - repository-unlicensed
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: self-serve
