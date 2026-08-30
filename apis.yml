@@ -213,7 +213,8 @@ apis:
   description: Misc API
   humanURL: https://listmonk.app/docs/apis/bounces/
   baseURL: https://{listmonk_host}/api
-  tags:
+  tags: []
+  tags_raw:
   - Miscellaneous
   properties:
   - type: OpenAPI
