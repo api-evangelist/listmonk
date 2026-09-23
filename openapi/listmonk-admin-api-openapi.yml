@@ -29,3 +29,5 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Reload app
+      x-summary-source: derived

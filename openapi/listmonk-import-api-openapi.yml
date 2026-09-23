@@ -34,6 +34,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/ImportStatus'
+      summary: Get import subscribers
+      x-summary-source: derived
     post:
       description: handles the uploading and bulk importing of a ZIP file of one or more CSV files.
       operationId: importSubscribers
@@ -64,6 +66,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/ImportStatus'
+      summary: Import subscribers
+      x-summary-source: derived
     delete:
       description: sends a stop signal to the importer.
       operationId: stopImportSubscribers
@@ -79,6 +83,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/ImportStatus'
+      summary: Stop import subscribers
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -98,6 +104,8 @@ paths:
                 properties:
                   data:
                     type: string
+      summary: Get import subscriber logs
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api

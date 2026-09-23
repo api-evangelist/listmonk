@@ -29,6 +29,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Get health check
+      x-summary-source: derived
   /config:
     get:
       tags:
@@ -45,6 +47,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/ServerConfig'
+      summary: Get server config
+      x-summary-source: derived
   /lang/{lang}:
     get:
       tags:
@@ -68,6 +72,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/LanguagePack'
+      summary: Get i18n lang
+      x-summary-source: derived
   /dashboard/charts:
     get:
       tags:
@@ -84,6 +90,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/DashboardChart'
+      summary: Get dashboard charts
+      x-summary-source: derived
   /dashboard/counts:
     get:
       tags:
@@ -100,6 +108,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/DashboardCount'
+      summary: Get dashboard counts
+      x-summary-source: derived
 components:
   schemas:
     DashboardCount:
@@ -142,6 +152,54 @@ components:
                       type: integer
             messages:
               type: integer
+    ServerConfig:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            messengers:
+              type: array
+              items:
+                type: string
+            langs:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  name:
+                    type: string
+            lang:
+              type: string
+            update:
+              type: string
+            needs_restart:
+              type: boolean
+            version:
+              type: string
+    DashboardChart:
+      type: object
+      properties:
+        link_clicks:
+          type: array
+          items:
+            type: object
+            properties:
+              count:
+                type: integer
+              date:
+                type: string
+        campaign_views:
+          type: array
+          items:
+            type: object
+            properties:
+              count:
+                type: integer
+              date:
+                type: string
     LanguagePack:
       type: object
       properties:
@@ -1278,51 +1336,3 @@ components:
               type: string
             users.logout:
               type: string
-    ServerConfig:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            messengers:
-              type: array
-              items:
-                type: string
-            langs:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  name:
-                    type: string
-            lang:
-              type: string
-            update:
-              type: string
-            needs_restart:
-              type: boolean
-            version:
-              type: string
-    DashboardChart:
-      type: object
-      properties:
-        link_clicks:
-          type: array
-          items:
-            type: object
-            properties:
-              count:
-                type: integer
-              date:
-                type: string
-        campaign_views:
-          type: array
-          items:
-            type: object
-            properties:
-              count:
-                type: integer
-              date:
-                type: string

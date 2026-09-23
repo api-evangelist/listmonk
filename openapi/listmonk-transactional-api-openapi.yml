@@ -40,6 +40,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Transact with subscriber
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api

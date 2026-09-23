@@ -43,6 +43,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Template'
+      summary: Get templates
+      x-summary-source: derived
     post:
       description: handles template creation
       operationId: createTemplate
@@ -65,6 +67,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Template'
+      summary: Create template
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -97,6 +101,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Template'
+      summary: Get template by id
+      x-summary-source: derived
     put:
       description: handles template modification
       operationId: updateTemplateById
@@ -126,6 +132,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Template'
+      summary: Update template by id
+      x-summary-source: derived
     delete:
       description: handles deletion of templates
       operationId: deleteTemplateById
@@ -148,6 +156,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete template by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -179,6 +189,8 @@ paths:
               schema:
                 type: string
                 example: <p>Hi there</p>
+      summary: Preview template
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -217,6 +229,8 @@ paths:
               schema:
                 type: string
                 example: <p>Hi there</p>
+      summary: Preview template by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -240,6 +254,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Template'
+      summary: Set default template by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -254,7 +270,7 @@ paths:
       operationId: getTemplate
       tags:
       - Templates
-      summary: Retrieve a template.
+      summary: Retrieve a template
       responses:
         '200':
           description: The template.
@@ -269,7 +285,7 @@ paths:
       operationId: updateTemplate
       tags:
       - Templates
-      summary: Update an existing template.
+      summary: Update an existing template
       requestBody:
         required: true
         content:
@@ -290,7 +306,7 @@ paths:
       operationId: deleteTemplate
       tags:
       - Templates
-      summary: Delete a template.
+      summary: Delete a template
       responses:
         '200':
           description: Deletion result.
@@ -311,7 +327,7 @@ paths:
       operationId: previewTemplate
       tags:
       - Templates
-      summary: Retrieve the rendered HTML preview of a template.
+      summary: Retrieve the rendered HTML preview of a template
       parameters:
       - name: template_id
         in: path
@@ -338,7 +354,7 @@ paths:
       operationId: setDefaultTemplate
       tags:
       - Templates
-      summary: Set a template as the default.
+      summary: Set a template as the default
       parameters:
       - name: template_id
         in: path
@@ -362,6 +378,27 @@ paths:
           description: Base URL of your listmonk instance
 components:
   schemas:
+    Template:
+      type: object
+      properties:
+        id:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        name:
+          type: string
+        body:
+          type: string
+        body_source:
+          type: string
+        subject:
+          type: string
+        type:
+          type: string
+        is_default:
+          type: boolean
     NewTemplate:
       type: object
       required:
@@ -388,27 +425,6 @@ components:
         body:
           type: string
           description: HTML body of the template
-    Template:
-      type: object
-      properties:
-        id:
-          type: integer
-        created_at:
-          type: string
-        updated_at:
-          type: string
-        name:
-          type: string
-        body:
-          type: string
-        body_source:
-          type: string
-        subject:
-          type: string
-        type:
-          type: string
-        is_default:
-          type: boolean
     UpdateTemplate:
       type: object
       properties:
@@ -431,31 +447,6 @@ components:
         body:
           type: string
           description: HTML body of the template
-    Template_2:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        type:
-          type: string
-        subject:
-          type: string
-        body:
-          type: string
-        is_default:
-          type: boolean
-        created_at:
-          type: string
-          format: date-time
-    TemplatesResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Template_2'
     TemplateRequest:
       type: object
       properties:
@@ -475,11 +466,36 @@ components:
       - name
       - type
       - body
+    Template_2:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
     TemplateResponse:
       type: object
       properties:
         data:
           $ref: '#/components/schemas/Template_2'
+    TemplatesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template_2'
   securitySchemes:
     BasicAuth:
       type: http

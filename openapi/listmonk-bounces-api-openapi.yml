@@ -90,6 +90,8 @@ paths:
                         type: integer
                       page:
                         type: integer
+      summary: Get bounces
+      x-summary-source: derived
     delete:
       description: handles deletion of bounce records.
       operationId: deleteBounces
@@ -116,6 +118,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete bounces
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -142,6 +146,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Bounce'
+      summary: Get bounce by id
+      x-summary-source: derived
     delete:
       description: handles bounce deletion, either a single one (ID in the URI), or a list.
       operationId: deleteBounceById
@@ -164,6 +170,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete bounce by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -172,7 +180,7 @@ paths:
       operationId: deleteBounce
       tags:
       - Bounces
-      summary: Delete a single bounce record.
+      summary: Delete a single bounce record
       parameters:
       - name: bounce_id
         in: path
@@ -231,6 +239,18 @@ components:
                 type: string
               total:
                 type: integer
+    BouncesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Bounce_2'
+            total:
+              type: integer
     Bounce_2:
       type: object
       properties:
@@ -253,18 +273,6 @@ components:
         created_at:
           type: string
           format: date-time
-    BouncesResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: '#/components/schemas/Bounce_2'
-            total:
-              type: integer
   securitySchemes:
     BasicAuth:
       type: http

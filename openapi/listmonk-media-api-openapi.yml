@@ -36,6 +36,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/MediaFileObject'
+      summary: Get media
+      x-summary-source: derived
     post:
       description: handles media file uploads.
       operationId: uploadMedia
@@ -58,6 +60,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/MediaFileObject'
+      summary: Upload media
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -84,6 +88,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/MediaFileObject'
+      summary: Get media by id
+      x-summary-source: derived
     delete:
       description: handles deletion of uploaded media.
       operationId: deleteMediaById
@@ -106,6 +112,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete media by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -120,7 +128,7 @@ paths:
       operationId: getMediaFile
       tags:
       - Media
-      summary: Retrieve a specific media file.
+      summary: Retrieve a specific media file
       responses:
         '200':
           description: The media file.
@@ -131,7 +139,7 @@ paths:
       operationId: deleteMedia
       tags:
       - Media
-      summary: Delete an uploaded media file.
+      summary: Delete an uploaded media file
       responses:
         '200':
           description: Deletion result.

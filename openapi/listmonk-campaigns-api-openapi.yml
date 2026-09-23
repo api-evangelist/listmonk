@@ -119,6 +119,8 @@ paths:
                         type: integer
                       page:
                         type: integer
+      summary: Get campaigns
+      x-summary-source: derived
     post:
       description: handles campaign creation
       operationId: createCampaign
@@ -140,11 +142,13 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/CampaignUpdate'
+      summary: Create campaign
+      x-summary-source: derived
     delete:
       operationId: deleteCampaigns
       tags:
       - Campaigns
-      summary: Delete multiple campaigns.
+      summary: Delete multiple campaigns
       responses:
         '200':
           description: Deletion result.
@@ -180,6 +184,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Campaign'
+      summary: Get campaign by id
+      x-summary-source: derived
     put:
       description: handle updation of campaign
       operationId: updateCampaignById
@@ -208,6 +214,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/CampaignUpdate'
+      summary: Update campaign by id
+      x-summary-source: derived
     delete:
       description: deletes specified campaign
       operationId: deleteCampaignById
@@ -230,6 +238,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete campaign by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -258,6 +268,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/CampaignStats'
+      summary: Get running campaign stats
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -310,6 +322,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/CampaignAnalyticsCount'
+      summary: Get campaign analytics
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -334,6 +348,8 @@ paths:
               schema:
                 type: string
                 example: <h3>Hi John!</h3>This is a   e-mail campaign. Your second name is Doe and you are from Bengaluru
+      summary: Preview campaign by id
+      x-summary-source: derived
     post:
       description: renders the HTML preview of a campaign body
       operationId: updatePreviewCampaignById
@@ -371,6 +387,8 @@ paths:
               schema:
                 type: string
                 example: <h3>Hi John!</h3>This is a   e-mail campaign. Your second name is Doe and you are from Bengaluru
+      summary: Update preview campaign by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -412,6 +430,8 @@ paths:
               schema:
                 type: string
                 example: <h3>Hi John!</h3><p>This is a test e-mail campaign. Your second name is Doe and you are from Bengaluru</p>
+      summary: Preview campaign text by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -452,6 +472,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Campaign'
+      summary: Update campaign status by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -491,6 +513,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Update campaign archive by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -523,6 +547,8 @@ paths:
                 properties:
                   data:
                     type: string
+      summary: Create campaign content by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -563,6 +589,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Test campaign by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -577,7 +605,7 @@ paths:
       operationId: getCampaign
       tags:
       - Campaigns
-      summary: Retrieve a specific campaign.
+      summary: Retrieve a specific campaign
       responses:
         '200':
           description: The campaign.
@@ -592,7 +620,7 @@ paths:
       operationId: updateCampaign
       tags:
       - Campaigns
-      summary: Update a campaign.
+      summary: Update a campaign
       requestBody:
         required: true
         content:
@@ -613,7 +641,7 @@ paths:
       operationId: deleteCampaign
       tags:
       - Campaigns
-      summary: Delete an individual campaign.
+      summary: Delete an individual campaign
       responses:
         '200':
           description: Deletion result.
@@ -634,7 +662,7 @@ paths:
       operationId: previewCampaign
       tags:
       - Campaigns
-      summary: Retrieve an HTML preview of a campaign.
+      summary: Retrieve an HTML preview of a campaign
       parameters:
       - name: campaign_id
         in: path
@@ -661,7 +689,7 @@ paths:
       operationId: testCampaign
       tags:
       - Campaigns
-      summary: Send a test of the campaign to arbitrary subscribers.
+      summary: Send a test of the campaign to arbitrary subscribers
       parameters:
       - name: campaign_id
         in: path
@@ -699,7 +727,7 @@ paths:
       operationId: updateCampaignStatus
       tags:
       - Campaigns
-      summary: Change the status of a campaign (running, paused, cancelled, scheduled).
+      summary: Change the status of a campaign (running, paused, cancelled, scheduled)
       parameters:
       - name: campaign_id
         in: path
@@ -741,7 +769,7 @@ paths:
       operationId: archiveCampaign
       tags:
       - Campaigns
-      summary: Publish or update a campaign in the public archive.
+      summary: Publish or update a campaign in the public archive
       parameters:
       - name: campaign_id
         in: path
@@ -765,6 +793,70 @@ paths:
           description: Base URL of your listmonk instance
 components:
   schemas:
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        CampaignID:
+          type: integer
+        views:
+          type: integer
+        clicks:
+          type: integer
+        lists:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+        started_at:
+          type: string
+        to_send:
+          type: integer
+        sent:
+          type: integer
+        uuid:
+          type: string
+        type:
+          type: string
+          enum:
+          - regular
+          - optin
+        name:
+          type: string
+        subject:
+          type: string
+        from_email:
+          type: string
+        body:
+          type: string
+        send_at:
+          type: string
+        status:
+          type: string
+        content_type:
+          type: string
+          enum:
+          - richtext
+          - html
+          - markdown
+          - plain
+        tags:
+          type: array
+          items:
+            type: string
+        template_id:
+          type: integer
+        messenger:
+          type: string
     CampaignContentRequest:
       type: object
       properties:
@@ -867,101 +959,6 @@ components:
                 type: object
             template_id:
               type: number
-    Campaign:
-      type: object
-      properties:
-        id:
-          type: integer
-        created_at:
-          type: string
-        updated_at:
-          type: string
-        CampaignID:
-          type: integer
-        views:
-          type: integer
-        clicks:
-          type: integer
-        lists:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              name:
-                type: string
-        started_at:
-          type: string
-        to_send:
-          type: integer
-        sent:
-          type: integer
-        uuid:
-          type: string
-        type:
-          type: string
-          enum:
-          - regular
-          - optin
-        name:
-          type: string
-        subject:
-          type: string
-        from_email:
-          type: string
-        body:
-          type: string
-        send_at:
-          type: string
-        status:
-          type: string
-        content_type:
-          type: string
-          enum:
-          - richtext
-          - html
-          - markdown
-          - plain
-        tags:
-          type: array
-          items:
-            type: string
-        template_id:
-          type: integer
-        messenger:
-          type: string
-    CampaignStats:
-      type: object
-      properties:
-        id:
-          type: integer
-        status:
-          type: string
-        to_send:
-          type: integer
-        sent:
-          type: integer
-        started_at:
-          type: string
-          format: date
-        updated_at:
-          type: string
-          format: date
-        rate:
-          type: integer
-        net_rate:
-          type: integer
-    CampaignAnalyticsCount:
-      type: object
-      properties:
-        campaign_id:
-          type: integer
-        count:
-          type: integer
-        timestamp:
-          type: string
-          format: date-time
     CampaignUpdate:
       type: object
       properties:
@@ -1005,6 +1002,70 @@ components:
           type: integer
         archive_meta:
           type: object
+    CampaignStats:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        to_send:
+          type: integer
+        sent:
+          type: integer
+        started_at:
+          type: string
+          format: date
+        updated_at:
+          type: string
+          format: date
+        rate:
+          type: integer
+        net_rate:
+          type: integer
+    CampaignAnalyticsCount:
+      type: object
+      properties:
+        campaign_id:
+          type: integer
+        count:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+    CampaignResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Campaign_2'
+    Campaign_2:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        content_type:
+          type: string
+        lists:
+          type: array
+          items:
+            type: object
+        sent:
+          type: integer
+        to_send:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
     CampaignRequest_2:
       type: object
       properties:
@@ -1047,39 +1108,6 @@ components:
       - name
       - subject
       - lists
-    Campaign_2:
-      type: object
-      properties:
-        id:
-          type: integer
-        uuid:
-          type: string
-        name:
-          type: string
-        subject:
-          type: string
-        status:
-          type: string
-        type:
-          type: string
-        content_type:
-          type: string
-        lists:
-          type: array
-          items:
-            type: object
-        sent:
-          type: integer
-        to_send:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
-    CampaignResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Campaign_2'
     CampaignsResponse:
       type: object
       properties:

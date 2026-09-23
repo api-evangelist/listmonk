@@ -34,14 +34,21 @@
     "tag 'Media' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
     "tag 'Subscribers' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
     "tag 'Templates' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
-    "tag 'Transactional' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied"
+    "tag 'Transactional' spans 2 source specs (listmonk-collections-openapi.yml, listmonk-openapi.yml): per-path servers applied",
+    "apis.yml register: already-registered"
   ],
   "skipped": [
+    "listmonk-admin-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "listmonk-bounces-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "listmonk-campaigns-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "listmonk-import-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "listmonk-lists-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-logs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-maintenance-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "listmonk-media-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-miscellaneous-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-public-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "listmonk-settings-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "listmonk-subscribers-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "listmonk-templates-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "listmonk-transactional-api-openapi.yml: previously refined output, superseded by openapi/_original/"

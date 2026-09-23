@@ -33,6 +33,8 @@ paths:
                       type: string
                     name:
                       type: string
+      summary: Get public lists
+      x-summary-source: derived
   /public/subscription:
     post:
       description: handles subscription requests coming from public API calls.
@@ -64,3 +66,5 @@ paths:
                 properties:
                   has_optin:
                     type: boolean
+      summary: Handle public subscription
+      x-summary-source: derived

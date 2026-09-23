@@ -107,6 +107,8 @@ paths:
                         type: integer
                       page:
                         type: integer
+      summary: Get subscribers
+      x-summary-source: derived
     post:
       description: handles creation of new subscriber
       operationId: createSubscriber
@@ -128,6 +130,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Subscriber'
+      summary: Create subscriber
+      x-summary-source: derived
     delete:
       description: handles subscribers deletion
       operationId: deleteSubscriberByList
@@ -150,6 +154,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete subscriber by list
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -176,6 +182,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Subscriber'
+      summary: Get subscriber by id
+      x-summary-source: derived
     put:
       description: modify subscriber data
       operationId: updateSubscriberById
@@ -204,6 +212,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Subscriber'
+      summary: Update subscriber by id
+      x-summary-source: derived
     delete:
       description: handles subscriber deletion based on id
       operationId: deleteSubscriberById
@@ -226,6 +236,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete subscriber by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -251,6 +263,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Manage subscriber lists
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -284,6 +298,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Manage subscriber list by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -309,6 +325,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Manage blocklist by subscriber list
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -342,6 +360,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Manage blocklist subscribers by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -373,6 +393,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriberData'
+      summary: Export subscriber data by ID
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -401,6 +423,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Bounce'
+      summary: Get subscriber bounces by id
+      x-summary-source: derived
     delete:
       description: deletes a subscriber's bounce records
       operationId: deleteSubscriberBouncesById
@@ -423,6 +447,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete subscriber bounces by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -449,6 +475,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Subscriber send optin by id
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -477,6 +505,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete subscriber by query
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -505,6 +535,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Blocklist subscribers query
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -533,6 +565,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Manage subscriber lists by query
+      x-summary-source: derived
     servers:
     - description: Listmonk Developement Server
       url: http://localhost:9000/api
@@ -547,7 +581,7 @@ paths:
       operationId: getSubscriber
       tags:
       - Subscribers
-      summary: Retrieve a specific subscriber.
+      summary: Retrieve a specific subscriber
       responses:
         '200':
           description: The subscriber.
@@ -562,7 +596,7 @@ paths:
       operationId: updateSubscriber
       tags:
       - Subscribers
-      summary: Update a specific subscriber.
+      summary: Update a specific subscriber
       requestBody:
         required: true
         content:
@@ -583,7 +617,7 @@ paths:
       operationId: deleteSubscriber
       tags:
       - Subscribers
-      summary: Delete a specific subscriber.
+      summary: Delete a specific subscriber
       responses:
         '200':
           description: Deletion result.
@@ -604,7 +638,7 @@ paths:
       operationId: sendSubscriberOptin
       tags:
       - Subscribers
-      summary: Send an opt-in confirmation email to a subscriber.
+      summary: Send an opt-in confirmation email to a subscriber
       parameters:
       - name: subscriber_id
         in: path
@@ -631,7 +665,7 @@ paths:
       operationId: exportSubscriber
       tags:
       - Subscribers
-      summary: Export a subscriber's data.
+      summary: Export a subscriber's data
       parameters:
       - name: subscriber_id
         in: path
@@ -658,7 +692,7 @@ paths:
       operationId: blocklistSubscriber
       tags:
       - Subscribers
-      summary: Blocklist a single subscriber.
+      summary: Blocklist a single subscriber
       parameters:
       - name: subscriber_id
         in: path
@@ -682,6 +716,27 @@ paths:
           description: Base URL of your listmonk instance
 components:
   schemas:
+    SubscriberData:
+      type: object
+      properties:
+        email:
+          type: string
+        profile:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriberProfile'
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscriptions'
+        campaign_views:
+          type: array
+          items:
+            type: object
+        link_clicks:
+          type: array
+          items:
+            type: object
     Subscriptions:
       type: object
       properties:
@@ -693,7 +748,50 @@ components:
           type: string
         created_at:
           type: string
-    NewSubscriber:
+    Subscriber:
+      type: object
+      properties:
+        id:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        uuid:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        attribs:
+          type: object
+          additionalProperties: true
+        status:
+          type: string
+        lists:
+          type: array
+          items:
+            type: object
+            properties:
+              subscription_status:
+                type: string
+              id:
+                type: integer
+              uuid:
+                type: string
+              name:
+                type: string
+              type:
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              created_at:
+                type: string
+              updated_at:
+                type: string
+    UpdateSubscriber:
       type: object
       properties:
         email:
@@ -779,36 +877,11 @@ components:
           - unconfirmed
           - unsubscribed
           description: confirmed, unconfirmed, or unsubscribed status.
-    SubscriberData:
-      type: object
-      properties:
-        email:
-          type: string
-        profile:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubscriberProfile'
-        subscriptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subscriptions'
-        campaign_views:
-          type: array
-          items:
-            type: object
-        link_clicks:
-          type: array
-          items:
-            type: object
-    Subscriber:
+    SubscriberProfile:
       type: object
       properties:
         id:
           type: integer
-        created_at:
-          type: string
-        updated_at:
-          type: string
         uuid:
           type: string
         email:
@@ -820,30 +893,11 @@ components:
           additionalProperties: true
         status:
           type: string
-        lists:
-          type: array
-          items:
-            type: object
-            properties:
-              subscription_status:
-                type: string
-              id:
-                type: integer
-              uuid:
-                type: string
-              name:
-                type: string
-              type:
-                type: string
-              tags:
-                type: array
-                items:
-                  type: string
-              created_at:
-                type: string
-              updated_at:
-                type: string
-    UpdateSubscriber:
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    NewSubscriber:
       type: object
       properties:
         email:
@@ -865,26 +919,6 @@ components:
         attribs:
           type: object
           additionalProperties: true
-    SubscriberProfile:
-      type: object
-      properties:
-        id:
-          type: integer
-        uuid:
-          type: string
-        email:
-          type: string
-        name:
-          type: string
-        attribs:
-          type: object
-          additionalProperties: true
-        status:
-          type: string
-        created_at:
-          type: string
-        updated_at:
-          type: string
     SubscribersResponse:
       type: object
       properties:
@@ -906,6 +940,32 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Subscriber_2'
+    Subscriber_2:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        attribs:
+          type: object
+          additionalProperties: true
+        lists:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     SubscriberRequest:
       type: object
       properties:
@@ -958,32 +1018,6 @@ components:
           - unconfirmed
           - confirmed
           - unsubscribed
-    Subscriber_2:
-      type: object
-      properties:
-        id:
-          type: integer
-        uuid:
-          type: string
-        email:
-          type: string
-        name:
-          type: string
-        status:
-          type: string
-        attribs:
-          type: object
-          additionalProperties: true
-        lists:
-          type: array
-          items:
-            type: object
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
   securitySchemes:
     BasicAuth:
       type: http

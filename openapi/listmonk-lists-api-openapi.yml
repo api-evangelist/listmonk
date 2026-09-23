@@ -104,6 +104,8 @@ paths:
                         type: integer
                       page:
                         type: integer
+      summary: Get lists
+      x-summary-source: derived
     post:
       description: handles list creation
       operationId: createList
@@ -125,11 +127,13 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/List'
+      summary: Create list
+      x-summary-source: derived
     delete:
       operationId: deleteLists
       tags:
       - Lists
-      summary: Delete multiple lists by ID.
+      summary: Delete multiple lists by ID
       parameters:
       - name: id
         in: query
@@ -166,6 +170,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/List'
+      summary: Get list by id
+      x-summary-source: derived
     put:
       description: handles list modification
       operationId: updateListById
@@ -194,6 +200,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/List'
+      summary: Update list by id
+      x-summary-source: derived
     delete:
       description: handles list deletion, either a single one (ID in the URI), or a list.
       operationId: deleteListById
@@ -216,6 +224,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete list by id
+      x-summary-source: derived
     parameters:
     - name: list_id
       in: path
@@ -230,7 +240,7 @@ paths:
       operationId: getPublicLists
       tags:
       - Lists
-      summary: Retrieve public lists (unauthenticated, for subscription forms).
+      summary: Retrieve public lists (unauthenticated, for subscription forms)
       security: []
       responses:
         '200':
@@ -246,27 +256,6 @@ paths:
           description: Base URL of your listmonk instance
 components:
   schemas:
-    NewList:
-      type: object
-      properties:
-        name:
-          type: string
-        type:
-          type: string
-          enum:
-          - public
-          - private
-        optin:
-          type: string
-          enum:
-          - single
-          - double
-        tags:
-          type: array
-          items:
-            type: string
-        description:
-          type: string
     List:
       type: object
       properties:
@@ -292,7 +281,7 @@ components:
           type: integer
         description:
           type: string
-    ListRequest:
+    NewList:
       type: object
       properties:
         name:
@@ -313,8 +302,6 @@ components:
             type: string
         description:
           type: string
-      required:
-      - name
     List_2:
       type: object
       properties:
@@ -342,6 +329,29 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/List_2'
+    ListRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - public
+          - private
+        optin:
+          type: string
+          enum:
+          - single
+          - double
+        tags:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+      required:
+      - name
     ListsResponse:
       type: object
       properties:

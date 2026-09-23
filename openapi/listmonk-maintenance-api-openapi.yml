@@ -39,6 +39,8 @@ paths:
                     properties:
                       count:
                         type: integer
+      summary: Delete GC subscribers
+      x-summary-source: derived
   /maintenance/analytics/{type}:
     delete:
       description: garbage collects (deletes) campaign analytics.
@@ -73,6 +75,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Delete campaign analytics by type
+      x-summary-source: derived
   /maintenance/subscriptions/unconfirmed:
     delete:
       description: garbage collects (deletes) orphaned or blocklisted subscribers.
@@ -103,3 +107,5 @@ paths:
                     properties:
                       count:
                         type: integer
+      summary: Delete unconfirmed subscriptions
+      x-summary-source: derived

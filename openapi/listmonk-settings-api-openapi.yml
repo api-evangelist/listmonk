@@ -29,6 +29,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Settings'
+      summary: Get settings
+      x-summary-source: derived
     put:
       tags:
       - Settings
@@ -50,6 +52,8 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Update settings
+      x-summary-source: derived
   /settings/smtp/test:
     post:
       tags:
@@ -72,34 +76,11 @@ paths:
                 properties:
                   data:
                     type: boolean
+      summary: Test SMTP settings
+      x-summary-source: derived
 components:
   schemas:
-    MailBoxBounces:
-      type: object
-      properties:
-        uuid:
-          type: string
-        enabled:
-          type: boolean
-        type:
-          type: string
-        host:
-          type: string
-        port:
-          type: integer
-        auth_protocol:
-          type: string
-        return_path:
-          type: string
-        username:
-          type: string
-        tls_enabled:
-          type: boolean
-        tls_skip_verify:
-          type: boolean
-        scan_interval:
-          type: string
-    SMTPSettings:
+    SMTPTest:
       type: object
       properties:
         uuid:
@@ -132,6 +113,12 @@ components:
           type: string
         tls_skip_verify:
           type: boolean
+        strEmailHeaders:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
     Settings:
       type: object
       properties:
@@ -267,7 +254,7 @@ components:
           type: string
         appearance.public.custom_js:
           type: string
-    SMTPTest:
+    SMTPSettings:
       type: object
       properties:
         uuid:
@@ -300,9 +287,28 @@ components:
           type: string
         tls_skip_verify:
           type: boolean
-        strEmailHeaders:
+    MailBoxBounces:
+      type: object
+      properties:
+        uuid:
           type: string
-        password:
+        enabled:
+          type: boolean
+        type:
           type: string
-        email:
+        host:
+          type: string
+        port:
+          type: integer
+        auth_protocol:
+          type: string
+        return_path:
+          type: string
+        username:
+          type: string
+        tls_enabled:
+          type: boolean
+        tls_skip_verify:
+          type: boolean
+        scan_interval:
           type: string
