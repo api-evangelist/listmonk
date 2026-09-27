@@ -8,17 +8,22 @@ description: listmonk is a free and open-source, self-hosted newsletter and mail
   templates, media, CSV import, transactional messages, and bounces. There is no hosted SaaS - users run
   their own instance.
 deliveryModel:
-  model: unknown
-  open_source: unknown
+  model: open-core
+  license: AGPL-3.0
+  license_evidence:
+    repo: knadh/listmonk
+    spdx: AGPL-3.0
+    stars: 23570
+  open_source: true
   commercial: true
   callable_host: false
-  label: Delivery model not determined — needs a product licence on record
-  confidence: low
+  label: Open core · an OSS project plus a commercial hosted product
+  confidence: medium
   source:
   - openapi
   - pricing
-  - repository-unlicensed
-  generated: '2026-08-28'
+  - repository-license
+  generated: '2026-09-25'
   method: derived
 accessModel:
   pricing: freemium
@@ -46,7 +51,7 @@ tags:
 - Campaigns
 - Subscribers
 - Bounce Handling
-- Open-Source
+- Open Source
 - Self-Hosted
 - Go
 - PostgreSQL
@@ -63,6 +68,7 @@ tags_raw:
 - Self-Hosted
 - Go
 - PostgreSQL
+- Open-Source
 created: '2026-06-25'
 modified: '2026-08-13'
 specificationVersion: '0.23'

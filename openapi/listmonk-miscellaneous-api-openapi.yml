@@ -152,33 +152,6 @@ components:
                       type: integer
             messages:
               type: integer
-    ServerConfig:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            messengers:
-              type: array
-              items:
-                type: string
-            langs:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  name:
-                    type: string
-            lang:
-              type: string
-            update:
-              type: string
-            needs_restart:
-              type: boolean
-            version:
-              type: string
     DashboardChart:
       type: object
       properties:
@@ -1335,4 +1308,31 @@ components:
             users.login:
               type: string
             users.logout:
+              type: string
+    ServerConfig:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            messengers:
+              type: array
+              items:
+                type: string
+            langs:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  name:
+                    type: string
+            lang:
+              type: string
+            update:
+              type: string
+            needs_restart:
+              type: boolean
+            version:
               type: string

@@ -324,7 +324,7 @@ paths:
           description: Base URL of your listmonk instance
   /templates/{template_id}/preview:
     get:
-      operationId: previewTemplate
+      operationId: getTemplatesByTemplateIdPreview
       tags:
       - Templates
       summary: Retrieve the rendered HTML preview of a template
@@ -340,6 +340,8 @@ paths:
       security:
       - BasicAuth: []
       - TokenAuth: []
+      x-operation-id-source: normalized
+      x-operation-id-original: previewTemplate
     servers:
     - url: http://localhost:9000/api
       description: Default local self-hosted instance
@@ -378,27 +380,6 @@ paths:
           description: Base URL of your listmonk instance
 components:
   schemas:
-    Template:
-      type: object
-      properties:
-        id:
-          type: integer
-        created_at:
-          type: string
-        updated_at:
-          type: string
-        name:
-          type: string
-        body:
-          type: string
-        body_source:
-          type: string
-        subject:
-          type: string
-        type:
-          type: string
-        is_default:
-          type: boolean
     NewTemplate:
       type: object
       required:
@@ -447,6 +428,27 @@ components:
         body:
           type: string
           description: HTML body of the template
+    Template:
+      type: object
+      properties:
+        id:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        name:
+          type: string
+        body:
+          type: string
+        body_source:
+          type: string
+        subject:
+          type: string
+        type:
+          type: string
+        is_default:
+          type: boolean
     TemplateRequest:
       type: object
       properties:
@@ -484,11 +486,6 @@ components:
         created_at:
           type: string
           format: date-time
-    TemplateResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Template_2'
     TemplatesResponse:
       type: object
       properties:
@@ -496,6 +493,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Template_2'
+    TemplateResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Template_2'
   securitySchemes:
     BasicAuth:
       type: http

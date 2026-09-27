@@ -793,6 +793,80 @@ paths:
           description: Base URL of your listmonk instance
 components:
   schemas:
+    CampaignUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        lists:
+          type: array
+          items:
+            type: integer
+        from_email:
+          type: string
+        messenger:
+          type: string
+        type:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        send_later:
+          type: boolean
+        send_at:
+          type: object
+        headers:
+          type: array
+          items:
+            type: object
+        template_id:
+          type: integer
+        content_type:
+          type: string
+        body:
+          type: string
+        altbody:
+          type: string
+        archive:
+          type: boolean
+        archive_template_id:
+          type: integer
+        archive_meta:
+          type: object
+    CampaignAnalyticsCount:
+      type: object
+      properties:
+        campaign_id:
+          type: integer
+        count:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+    CampaignStats:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        to_send:
+          type: integer
+        sent:
+          type: integer
+        started_at:
+          type: string
+          format: date
+        updated_at:
+          type: string
+          format: date
+        rate:
+          type: integer
+        net_rate:
+          type: integer
     Campaign:
       type: object
       properties:
@@ -959,85 +1033,6 @@ components:
                 type: object
             template_id:
               type: number
-    CampaignUpdate:
-      type: object
-      properties:
-        name:
-          type: string
-        subject:
-          type: string
-        lists:
-          type: array
-          items:
-            type: integer
-        from_email:
-          type: string
-        messenger:
-          type: string
-        type:
-          type: string
-        tags:
-          type: array
-          items:
-            type: string
-        send_later:
-          type: boolean
-        send_at:
-          type: object
-        headers:
-          type: array
-          items:
-            type: object
-        template_id:
-          type: integer
-        content_type:
-          type: string
-        body:
-          type: string
-        altbody:
-          type: string
-        archive:
-          type: boolean
-        archive_template_id:
-          type: integer
-        archive_meta:
-          type: object
-    CampaignStats:
-      type: object
-      properties:
-        id:
-          type: integer
-        status:
-          type: string
-        to_send:
-          type: integer
-        sent:
-          type: integer
-        started_at:
-          type: string
-          format: date
-        updated_at:
-          type: string
-          format: date
-        rate:
-          type: integer
-        net_rate:
-          type: integer
-    CampaignAnalyticsCount:
-      type: object
-      properties:
-        campaign_id:
-          type: integer
-        count:
-          type: integer
-        timestamp:
-          type: string
-          format: date-time
-    CampaignResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Campaign_2'
     Campaign_2:
       type: object
       properties:
@@ -1066,6 +1061,23 @@ components:
         created_at:
           type: string
           format: date-time
+    CampaignResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Campaign_2'
+    CampaignsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Campaign_2'
+            total:
+              type: integer
     CampaignRequest_2:
       type: object
       properties:
@@ -1108,18 +1120,6 @@ components:
       - name
       - subject
       - lists
-    CampaignsResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: '#/components/schemas/Campaign_2'
-            total:
-              type: integer
   securitySchemes:
     BasicAuth:
       type: http
