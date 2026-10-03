@@ -256,27 +256,6 @@ paths:
           description: Base URL of your listmonk instance
 components:
   schemas:
-    NewList:
-      type: object
-      properties:
-        name:
-          type: string
-        type:
-          type: string
-          enum:
-          - public
-          - private
-        optin:
-          type: string
-          enum:
-          - single
-          - double
-        tags:
-          type: array
-          items:
-            type: string
-        description:
-          type: string
     List:
       type: object
       properties:
@@ -302,23 +281,27 @@ components:
           type: integer
         description:
           type: string
-    ListsResponse:
+    NewList:
       type: object
       properties:
-        data:
-          type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: '#/components/schemas/List_2'
-            total:
-              type: integer
-    ListResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/List_2'
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - public
+          - private
+        optin:
+          type: string
+          enum:
+          - single
+          - double
+        tags:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
     List_2:
       type: object
       properties:
@@ -341,6 +324,18 @@ components:
         created_at:
           type: string
           format: date-time
+    ListsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/List_2'
+            total:
+              type: integer
     ListRequest:
       type: object
       properties:
@@ -364,6 +359,11 @@ components:
           type: string
       required:
       - name
+    ListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/List_2'
   securitySchemes:
     BasicAuth:
       type: http

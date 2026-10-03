@@ -716,7 +716,62 @@ paths:
           description: Base URL of your listmonk instance
 components:
   schemas:
-    UpdateSubscriber:
+    Bounce:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              type:
+                type: string
+              source:
+                type: string
+              meta:
+                type: object
+              created_at:
+                type: string
+              email:
+                type: string
+              subscriber_uuid:
+                type: string
+              subscriber_id:
+                type: integer
+              campaign:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+              campaign_uuid:
+                type: string
+              total:
+                type: integer
+    SubscriberProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        attribs:
+          type: object
+          additionalProperties: true
+        status:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    NewSubscriber:
       type: object
       properties:
         email:
@@ -781,27 +836,6 @@ components:
                 type: string
               updated_at:
                 type: string
-    SubscriberData:
-      type: object
-      properties:
-        email:
-          type: string
-        profile:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubscriberProfile'
-        subscriptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subscriptions'
-        campaign_views:
-          type: array
-          items:
-            type: object
-        link_clicks:
-          type: array
-          items:
-            type: object
     SubscriberQueryRequest:
       type: object
       properties:
@@ -831,73 +865,7 @@ components:
           - unconfirmed
           - unsubscribed
           description: confirmed, unconfirmed, or unsubscribed status.
-    Bounce:
-      type: object
-      properties:
-        results:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              type:
-                type: string
-              source:
-                type: string
-              meta:
-                type: object
-              created_at:
-                type: string
-              email:
-                type: string
-              subscriber_uuid:
-                type: string
-              subscriber_id:
-                type: integer
-              campaign:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-              campaign_uuid:
-                type: string
-              total:
-                type: integer
-    Subscriptions:
-      type: object
-      properties:
-        subscription_status:
-          type: string
-        name:
-          type: string
-        type:
-          type: string
-        created_at:
-          type: string
-    SubscriberProfile:
-      type: object
-      properties:
-        id:
-          type: integer
-        uuid:
-          type: string
-        email:
-          type: string
-        name:
-          type: string
-        attribs:
-          type: object
-          additionalProperties: true
-        status:
-          type: string
-        created_at:
-          type: string
-        updated_at:
-          type: string
-    NewSubscriber:
+    UpdateSubscriber:
       type: object
       properties:
         email:
@@ -919,6 +887,38 @@ components:
         attribs:
           type: object
           additionalProperties: true
+    Subscriptions:
+      type: object
+      properties:
+        subscription_status:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+    SubscriberData:
+      type: object
+      properties:
+        email:
+          type: string
+        profile:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriberProfile'
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscriptions'
+        campaign_views:
+          type: array
+          items:
+            type: object
+        link_clicks:
+          type: array
+          items:
+            type: object
     Subscriber_2:
       type: object
       properties:
@@ -945,6 +945,47 @@ components:
         updated_at:
           type: string
           format: date-time
+    SubscriberListsRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+        query:
+          type: string
+        action:
+          type: string
+          enum:
+          - add
+          - remove
+          - unsubscribe
+        target_list_ids:
+          type: array
+          items:
+            type: integer
+        status:
+          type: string
+          enum:
+          - unconfirmed
+          - confirmed
+          - unsubscribed
+    SubscribersResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Subscriber_2'
+            total:
+              type: integer
+            page:
+              type: integer
+            per_page:
+              type: integer
     SubscriberRequest:
       type: object
       properties:
@@ -972,47 +1013,6 @@ components:
           type: boolean
       required:
       - email
-    SubscribersResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: '#/components/schemas/Subscriber_2'
-            total:
-              type: integer
-            page:
-              type: integer
-            per_page:
-              type: integer
-    SubscriberListsRequest:
-      type: object
-      properties:
-        ids:
-          type: array
-          items:
-            type: integer
-        query:
-          type: string
-        action:
-          type: string
-          enum:
-          - add
-          - remove
-          - unsubscribe
-        target_list_ids:
-          type: array
-          items:
-            type: integer
-        status:
-          type: string
-          enum:
-          - unconfirmed
-          - confirmed
-          - unsubscribed
     SubscriberResponse:
       type: object
       properties:

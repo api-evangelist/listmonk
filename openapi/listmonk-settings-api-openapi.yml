@@ -80,6 +80,103 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    MailBoxBounces:
+      type: object
+      properties:
+        uuid:
+          type: string
+        enabled:
+          type: boolean
+        type:
+          type: string
+        host:
+          type: string
+        port:
+          type: integer
+        auth_protocol:
+          type: string
+        return_path:
+          type: string
+        username:
+          type: string
+        tls_enabled:
+          type: boolean
+        tls_skip_verify:
+          type: boolean
+        scan_interval:
+          type: string
+    SMTPSettings:
+      type: object
+      properties:
+        uuid:
+          type: string
+        enabled:
+          type: boolean
+        host:
+          type: string
+        hello_hostname:
+          type: string
+        port:
+          type: integer
+        auth_protocol:
+          type: string
+        username:
+          type: string
+        email_headers:
+          type: array
+          items:
+            type: object
+        max_conns:
+          type: integer
+        max_msg_retries:
+          type: integer
+        idle_timeout:
+          type: string
+        wait_timeout:
+          type: string
+        tls_type:
+          type: string
+        tls_skip_verify:
+          type: boolean
+    SMTPTest:
+      type: object
+      properties:
+        uuid:
+          type: string
+        enabled:
+          type: boolean
+        host:
+          type: string
+        hello_hostname:
+          type: string
+        port:
+          type: integer
+        auth_protocol:
+          type: string
+        username:
+          type: string
+        email_headers:
+          type: array
+          items:
+            type: object
+        max_conns:
+          type: integer
+        max_msg_retries:
+          type: integer
+        idle_timeout:
+          type: string
+        wait_timeout:
+          type: string
+        tls_type:
+          type: string
+        tls_skip_verify:
+          type: boolean
+        strEmailHeaders:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
     Settings:
       type: object
       properties:
@@ -214,101 +311,4 @@ components:
         appearance.public.custom_css:
           type: string
         appearance.public.custom_js:
-          type: string
-    SMTPSettings:
-      type: object
-      properties:
-        uuid:
-          type: string
-        enabled:
-          type: boolean
-        host:
-          type: string
-        hello_hostname:
-          type: string
-        port:
-          type: integer
-        auth_protocol:
-          type: string
-        username:
-          type: string
-        email_headers:
-          type: array
-          items:
-            type: object
-        max_conns:
-          type: integer
-        max_msg_retries:
-          type: integer
-        idle_timeout:
-          type: string
-        wait_timeout:
-          type: string
-        tls_type:
-          type: string
-        tls_skip_verify:
-          type: boolean
-    SMTPTest:
-      type: object
-      properties:
-        uuid:
-          type: string
-        enabled:
-          type: boolean
-        host:
-          type: string
-        hello_hostname:
-          type: string
-        port:
-          type: integer
-        auth_protocol:
-          type: string
-        username:
-          type: string
-        email_headers:
-          type: array
-          items:
-            type: object
-        max_conns:
-          type: integer
-        max_msg_retries:
-          type: integer
-        idle_timeout:
-          type: string
-        wait_timeout:
-          type: string
-        tls_type:
-          type: string
-        tls_skip_verify:
-          type: boolean
-        strEmailHeaders:
-          type: string
-        password:
-          type: string
-        email:
-          type: string
-    MailBoxBounces:
-      type: object
-      properties:
-        uuid:
-          type: string
-        enabled:
-          type: boolean
-        type:
-          type: string
-        host:
-          type: string
-        port:
-          type: integer
-        auth_protocol:
-          type: string
-        return_path:
-          type: string
-        username:
-          type: string
-        tls_enabled:
-          type: boolean
-        tls_skip_verify:
-          type: boolean
-        scan_interval:
           type: string
