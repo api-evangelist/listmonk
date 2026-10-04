@@ -182,15 +182,6 @@ components:
           type: string
         uri:
           type: string
-    MediaResponse:
-      type: object
-      properties:
-        data:
-          oneOf:
-          - $ref: '#/components/schemas/Media'
-          - type: array
-            items:
-              $ref: '#/components/schemas/Media'
     Media:
       type: object
       properties:
@@ -209,6 +200,15 @@ components:
         created_at:
           type: string
           format: date-time
+    MediaResponse:
+      type: object
+      properties:
+        data:
+          oneOf:
+          - $ref: '#/components/schemas/Media'
+          - type: array
+            items:
+              $ref: '#/components/schemas/Media'
   securitySchemes:
     BasicAuth:
       type: http

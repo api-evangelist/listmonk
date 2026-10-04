@@ -239,18 +239,6 @@ components:
                 type: string
               total:
                 type: integer
-    BouncesResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: '#/components/schemas/Bounce_2'
-            total:
-              type: integer
     Bounce_2:
       type: object
       properties:
@@ -273,6 +261,18 @@ components:
         created_at:
           type: string
           format: date-time
+    BouncesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Bounce_2'
+            total:
+              type: integer
   securitySchemes:
     BasicAuth:
       type: http

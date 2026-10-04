@@ -380,12 +380,8 @@ paths:
           description: Base URL of your listmonk instance
 components:
   schemas:
-    NewTemplate:
+    UpdateTemplate:
       type: object
-      required:
-      - name
-      - type
-      - body
       properties:
         name:
           type: string
@@ -427,8 +423,12 @@ components:
           type: string
         is_default:
           type: boolean
-    UpdateTemplate:
+    NewTemplate:
       type: object
+      required:
+      - name
+      - type
+      - body
       properties:
         name:
           type: string
@@ -449,6 +449,31 @@ components:
         body:
           type: string
           description: HTML body of the template
+    TemplatesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template_2'
+    Template_2:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
     TemplateResponse:
       type: object
       properties:
@@ -473,31 +498,6 @@ components:
       - name
       - type
       - body
-    Template_2:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        type:
-          type: string
-        subject:
-          type: string
-        body:
-          type: string
-        is_default:
-          type: boolean
-        created_at:
-          type: string
-          format: date-time
-    TemplatesResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Template_2'
   securitySchemes:
     BasicAuth:
       type: http

@@ -302,28 +302,11 @@ components:
             type: string
         description:
           type: string
-    List_2:
+    ListResponse:
       type: object
       properties:
-        id:
-          type: integer
-        uuid:
-          type: string
-        name:
-          type: string
-        type:
-          type: string
-        optin:
-          type: string
-        tags:
-          type: array
-          items:
-            type: string
-        subscriber_count:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
+        data:
+          $ref: '#/components/schemas/List_2'
     ListsResponse:
       type: object
       properties:
@@ -359,11 +342,28 @@ components:
           type: string
       required:
       - name
-    ListResponse:
+    List_2:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/List_2'
+        id:
+          type: integer
+        uuid:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        optin:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        subscriber_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
   securitySchemes:
     BasicAuth:
       type: http

@@ -112,33 +112,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    ServerConfig:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            messengers:
-              type: array
-              items:
-                type: string
-            langs:
-              type: array
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  name:
-                    type: string
-            lang:
-              type: string
-            update:
-              type: string
-            needs_restart:
-              type: boolean
-            version:
-              type: string
     DashboardCount:
       type: object
       properties:
@@ -179,6 +152,33 @@ components:
                       type: integer
             messages:
               type: integer
+    ServerConfig:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            messengers:
+              type: array
+              items:
+                type: string
+            langs:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  name:
+                    type: string
+            lang:
+              type: string
+            update:
+              type: string
+            needs_restart:
+              type: boolean
+            version:
+              type: string
     DashboardChart:
       type: object
       properties:
