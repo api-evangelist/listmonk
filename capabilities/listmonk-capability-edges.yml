@@ -1,0 +1,38 @@
+slug: listmonk
+provider: listmonk
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 2
+edges:
+- tag: Campaigns
+  spec_file: listmonk-campaigns-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.75
+  evidence: POST /campaigns createCampaign Create campaign; GET /campaigns/analytics/{type} getCampaignAnalytics;
+    PUT /campaigns/{id}/status
+  reason: Operations create, schedule, preview and measure email newsletter campaigns on a mailing-list
+    manager — this is outbound marketing campaign execution and measurement. Sub-capability chosen as
+    Digital Marketing Management (email/marketing automation channel), though Demand Generation is a plausible
+    alternative, hence moderated confidence.
+- tag: Lists
+  spec_file: listmonk-lists-api-openapi.yml
+  capability_id: BC-400
+  capability_id_l1: BC-400
+  capability_name: Marketing Management
+  confidence: 0.7
+  evidence: GET /public/lists getPublicLists Retrieve public lists (unauthenticated, for subscription
+    forms)
+  reason: Mailing lists define the audiences that campaigns are sent to and that signup forms subscribe
+    to — marketing audience management. Which sub-capability (demand generation vs. digital marketing)
+    is not determined by the evidence, so only the L1 is emitted.

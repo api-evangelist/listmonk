@@ -249,6 +249,9 @@ apis:
   - type: OpenAPI
     url: openapi/listmonk-settings-api-openapi.yml
 common:
+- type: CapabilityMap
+  url: capabilities/listmonk-capability-edges.yml
+  name: listmonk Business Capability Map
 - type: AgenticAccess
   url: agentic-access/listmonk-agentic-access.yml
 - type: DomainSecurity
