@@ -302,11 +302,6 @@ components:
             type: string
         description:
           type: string
-    ListResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/List_2'
     ListsResponse:
       type: object
       properties:
@@ -364,6 +359,11 @@ components:
         created_at:
           type: string
           format: date-time
+    ListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/List_2'
   securitySchemes:
     BasicAuth:
       type: http

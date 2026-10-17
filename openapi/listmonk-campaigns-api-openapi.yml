@@ -861,27 +861,49 @@ components:
           type: string
         to:
           type: string
-    CampaignStats:
+    CampaignUpdate:
       type: object
       properties:
-        id:
-          type: integer
-        status:
+        name:
           type: string
-        to_send:
-          type: integer
-        sent:
-          type: integer
-        started_at:
+        subject:
           type: string
-          format: date
-        updated_at:
+        lists:
+          type: array
+          items:
+            type: integer
+        from_email:
           type: string
-          format: date
-        rate:
+        messenger:
+          type: string
+        type:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        send_later:
+          type: boolean
+        send_at:
+          type: object
+        headers:
+          type: array
+          items:
+            type: object
+        template_id:
           type: integer
-        net_rate:
+        content_type:
+          type: string
+        body:
+          type: string
+        altbody:
+          type: string
+        archive:
+          type: boolean
+        archive_template_id:
           type: integer
+        archive_meta:
+          type: object
     CampaignRequest:
       type: object
       properties:
@@ -980,49 +1002,27 @@ components:
           type: integer
         messenger:
           type: string
-    CampaignUpdate:
+    CampaignStats:
       type: object
       properties:
-        name:
-          type: string
-        subject:
-          type: string
-        lists:
-          type: array
-          items:
-            type: integer
-        from_email:
-          type: string
-        messenger:
-          type: string
-        type:
-          type: string
-        tags:
-          type: array
-          items:
-            type: string
-        send_later:
-          type: boolean
-        send_at:
-          type: object
-        headers:
-          type: array
-          items:
-            type: object
-        template_id:
+        id:
           type: integer
-        content_type:
+        status:
           type: string
-        body:
-          type: string
-        altbody:
-          type: string
-        archive:
-          type: boolean
-        archive_template_id:
+        to_send:
           type: integer
-        archive_meta:
-          type: object
+        sent:
+          type: integer
+        started_at:
+          type: string
+          format: date
+        updated_at:
+          type: string
+          format: date
+        rate:
+          type: integer
+        net_rate:
+          type: integer
     CampaignAnalyticsCount:
       type: object
       properties:
@@ -1031,34 +1031,6 @@ components:
         count:
           type: integer
         timestamp:
-          type: string
-          format: date-time
-    Campaign_2:
-      type: object
-      properties:
-        id:
-          type: integer
-        uuid:
-          type: string
-        name:
-          type: string
-        subject:
-          type: string
-        status:
-          type: string
-        type:
-          type: string
-        content_type:
-          type: string
-        lists:
-          type: array
-          items:
-            type: object
-        sent:
-          type: integer
-        to_send:
-          type: integer
-        created_at:
           type: string
           format: date-time
     CampaignResponse:
@@ -1108,6 +1080,34 @@ components:
       - name
       - subject
       - lists
+    Campaign_2:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        name:
+          type: string
+        subject:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        content_type:
+          type: string
+        lists:
+          type: array
+          items:
+            type: object
+        sent:
+          type: integer
+        to_send:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
     CampaignsResponse:
       type: object
       properties:
